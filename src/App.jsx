@@ -1,5 +1,5 @@
 import React from "react";
-
+ 
 export default function App() {
   return (
     <section className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden min-h-screen">

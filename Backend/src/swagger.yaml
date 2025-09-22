@@ -8,21 +8,205 @@ info:
 servers:
   - url: ${{server}}
 paths: 
-  /check:
-    get:
+  /auth/register:
+    post:
+      summary: Register a new user
       tags:
-        - Health Check
-      summary: Check API status
-      description: Check if the API is up and running
-      operationId: checkApiStatus
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - FirstName
+                - LastName
+                - DisplayName
+                - Email
+                - Password
+              properties:
+                FirstName:
+                  type: string
+                  example: John
+                LastName:
+                  type: string
+                  example: Doe
+                DisplayName:
+                  type: string
+                  example: johndoe123
+                Email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                Password:
+                  type: string
+                  format: password
+                  example: MySecurePass123
       responses:
-        '200':
-          description: API is up and running
+        "201":
+          description: User registered successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "API is up and running"
+                $ref: '#/components/schemas/ApiResponse'
+        "400":
+          description: User already exists or display name taken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/verify-email:
+    post:
+      summary: Verify user's email using token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  description: JWT email verification token
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        "200":
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "400":
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/resend-verification:
+    post:
+      summary: Resend email verification link
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+      responses:
+        "200":
+          description: Email verification link resent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - Email
+                - Password
+              properties:
+                Email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                Password:
+                  type: string
+                  format: password
+                  example: MySecurePass123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        "400":
+          description: Invalid email, password, or email not verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        IsSuccess:
+          type: boolean
+          example: true
+        Message:
+          type: string
+          example: User registered successfully
+        Data:
+          nullable: true
+          example: null
+        Errors:
+          type: array
+          items:
+            type: string
+            example: null
+
+    ApiError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Invalid email or password
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            Data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

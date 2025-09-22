@@ -5,6 +5,8 @@ export const config = {
     dbUserName: String(process.env.DB_USERNAME),
     dbPassword: String(process.env.DB_PASSWORD),
     dbName: String(process.env.DB_NAME),
+    dbClusterName: String(process.env.DB_CLUSTER_NAME),
+    dbClusterNameSuffix: String(process.env.DB_CLUSTER_NAME_SUFFIX),
     accessTokenExpiresIn: String(process.env.ACCESS_TOKEN_EXPIRES_IN),
     accessTokenSecret: String(process.env.ACCESS_TOKEN_SECRET),
     refreshTokenExpiresIn: String(process.env.REFRESH_TOKEN_EXPIRES_IN),

@@ -43,10 +43,9 @@ app.use(
 //#endregion
 
 //#region Routes
+import routes from './src/routes/index.js'
 
-app.get("/api/v1/check", (req, res) => {
-    res.send({status: "API is running...."});
-})
+app.use("/api/v1/auth", routes.authRoutes);
 
 //#endregion
 

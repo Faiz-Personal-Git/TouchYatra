@@ -1,3 +1,3 @@
-export * from "./handleError.js"
+export * from "./UserModels.js"
 
 export * as default from './index.js'

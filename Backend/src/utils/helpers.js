@@ -1,6 +1,6 @@
 import { config } from "./index.js";
 
-export const mongoUri = (userName, Password, dbName) => {
+export const mongoUri = (userName, Password, dbName, clusterName, clusterNameSuffix) => {
 
   if(!config.isProduction)
     return `mongodb://localhost:27017/${dbName}`;
@@ -8,7 +8,7 @@ export const mongoUri = (userName, Password, dbName) => {
   const encUserName = encodeURIComponent(userName);
   const encPassword = encodeURIComponent(Password);
 
-  return `mongodb+srv://${encUserName}:${encPassword}@cluster0.af860ju.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/${dbName}`;
+  return `mongodb+srv://${encUserName}:${encPassword}@${clusterName}.${clusterNameSuffix}.mongodb.net/?retryWrites=true&w=majority&appName=${clusterName}/${dbName}`;
 }
 
 export class ApiResponse { 

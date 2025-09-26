@@ -18,10 +18,10 @@ export const handleError = (err, req, res, next) => {
   }
 
   const response = {
-    IsSuccess: false,
-    Message: error.message,
-    Data: error.data,
-    Errors: error.errors
+    isSuccess: false,
+    message: error.message,
+    data: error.data,
+    errors: error.errors
     // ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {}), // Error stack traces should be visible in development for debugging
   };
 

@@ -1,10 +1,19 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { AlertProvider } from "../src/Components/Alert.jsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import { SignIn, SignUp,Profile } from "../src/Pages/Index.js"
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  <AlertProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<App />} />  
+        <Route path='/SignIn' element={<SignIn />} />
+        <Route path='/SignUp' element={<SignUp />} />
+        <Route path='/Profile' element={<Profile />} />
+      </Routes>
+    </BrowserRouter>
+  </AlertProvider>
 )

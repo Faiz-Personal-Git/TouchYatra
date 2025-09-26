@@ -8,7 +8,7 @@ export const mongoUri = (userName, Password, dbName, clusterName, clusterNameSuf
   const encUserName = encodeURIComponent(userName);
   const encPassword = encodeURIComponent(Password);
 
-  return `mongodb+srv://${encUserName}:${encPassword}@${clusterName}.${clusterNameSuffix}.mongodb.net/?retryWrites=true&w=majority&appName=${clusterName}/${dbName}`;
+  return `mongodb+srv://${encUserName}:${encPassword}@${clusterName}.${clusterNameSuffix}.mongodb.net/${dbName}`;
 }
 
 export class ApiResponse { 

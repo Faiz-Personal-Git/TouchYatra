@@ -3,7 +3,7 @@ import { asyncHandler, ApiResponse, ApiError, config } from "../utils/index.js";
 import { UserModel } from "../models/index.js";
 
 
-const generateAccessAndRefereshTokens = async (userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const user = await UserModel.findById(userId)
         if (!user) {
@@ -16,7 +16,7 @@ const generateAccessAndRefereshTokens = async (userId) =>{
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
 
-        return {accessToken, refreshToken}
+        return { accessToken, refreshToken }
 
 
     } catch (error) {
@@ -24,9 +24,9 @@ const generateAccessAndRefereshTokens = async (userId) =>{
     }
 }
 
-
 export const registerUser = asyncHandler(async (req, res) => {
-    const { FirstName, LastName, DisplayName, Email, Password } = req.body;
+    
+    const { FirstName, LastName, DisplayName, Email, Password, IsEmailVerified } = req.body;
 
     // Check if user already exists
     const existingUser = await UserModel.findOne({ Email });
@@ -35,11 +35,12 @@ export const registerUser = asyncHandler(async (req, res) => {
             throw new ApiError(400, "User with this email already exists and is verified");
         }
 
-        if(existingUser.DisplayName === DisplayName){
+        if (existingUser.DisplayName === DisplayName) {
             existingUser.FirstName = FirstName;
             existingUser.LastName = LastName;
             existingUser.Password = Password;
-            existingUser.EmailVerificationToken = existingUser.generateEmailVerificationToken();    
+            existingUser.IsEmailVerified = IsEmailVerified;
+            existingUser.EmailVerificationToken = existingUser.generateEmailVerificationToken();
             await existingUser.save();
 
             // send verification email
@@ -48,14 +49,15 @@ export const registerUser = asyncHandler(async (req, res) => {
         }
 
         var userWithSameDisplayName = await UserModel.findOne({ DisplayName });
-        if(userWithSameDisplayName)
+        if (userWithSameDisplayName)
             throw new ApiError(400, "Display name is already taken. Please choose a different one.");
 
         existingUser.FirstName = FirstName;
         existingUser.DisplayName = DisplayName;
         existingUser.LastName = LastName;
         existingUser.Password = Password;
-        existingUser.EmailVerificationToken = existingUser.generateEmailVerificationToken();    
+        existingUser.IsEmailVerified = IsEmailVerified;
+        existingUser.EmailVerificationToken = existingUser.generateEmailVerificationToken();
         await existingUser.save();
 
         // send verification email
@@ -69,15 +71,16 @@ export const registerUser = asyncHandler(async (req, res) => {
         LastName,
         DisplayName,
         Email,
-        Password
+        Password,
+        IsEmailVerified
     });
 
     newUser.EmailVerificationToken = newUser.generateEmailVerificationToken();
     await newUser.save();
     // send verification email
-    
+
     return new ApiResponse(201, null, "User registered successfully")
-})
+});
 
 export const verifyEmail = asyncHandler(async (req, res) => {
     const { token } = req.body;
@@ -114,7 +117,7 @@ export const resendEmailVerification = asyncHandler(async (req) => {
     // ...
 
     return new ApiResponse(200, null, "Email verification link resent");
-})
+});
 
 export const loginUser = asyncHandler(async (req, res) => {
     const { Email, Password } = req.body;
@@ -127,11 +130,31 @@ export const loginUser = asyncHandler(async (req, res) => {
     if (!user.IsEmailVerified) {
         throw new ApiError(400, "Email is not verified. Please verify your email to login.");
     }
+
     // Check if password is correct
     const isPasswordCorrect = await user.isPasswordCorrect(Password);
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Invalid email or password");
     }
+    // Generate tokens
+    const tokens = await generateAccessAndRefereshTokens(user._id);
+
+    return new ApiResponse(200, tokens, "Login successful");
+});
+
+export const googleLogin = asyncHandler(async (req, res) => {
+    const { Email } = req.body;
+
+    // Find user by email
+    const user = await UserModel.findOne({ Email });
+    if (!user) {
+       throw new ApiError(400, `The email address "${Email}" is not registered. Please sign up before attempting to log in.`);
+
+    }
+    if (!user.IsEmailVerified) {
+        throw new ApiError(400, "Email is not verified. Please verify your email to login.");
+    }
+
     // Generate tokens
     const tokens = await generateAccessAndRefereshTokens(user._id);
 

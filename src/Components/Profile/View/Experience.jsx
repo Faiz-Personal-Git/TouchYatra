@@ -1,14 +1,14 @@
 // components/Experience.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaMapMarkerAlt, FaWater, FaShip, FaAnchor } from 'react-icons/fa';
+import { FaCalendarAlt, FaMapMarkerAlt, FaTree } from 'react-icons/fa';
 
 const Experience = () => {
   const experiences = [
     {
       id: 1,
       position: "Senior Full Stack Developer",
-      company: "OceanTech Innovations",
+      company: "SummitTech Solutions",
       location: "San Francisco, CA",
       period: "Jan 2020 - Present",
       description: "Lead development of scalable web applications using React and Node.js. Mentored junior developers and implemented best practices for code quality and performance.",
@@ -21,7 +21,7 @@ const Experience = () => {
     {
       id: 2,
       position: "Frontend Developer",
-      company: "DeepSea Digital",
+      company: "Alpine Digital Agency",
       location: "New York, NY",
       period: "Jun 2017 - Dec 2019",
       description: "Developed responsive web applications using modern JavaScript frameworks. Collaborated with UX designers to implement pixel-perfect designs.",
@@ -34,7 +34,7 @@ const Experience = () => {
     {
       id: 3,
       position: "Junior Web Developer",
-      company: "Coral StartUp Ventures",
+      company: "Forest StartUp Ventures",
       location: "Austin, TX",
       period: "Mar 2015 - May 2017",
       description: "Assisted in developing and maintaining company websites and web applications. Gained experience in full-stack development and agile methodologies.",
@@ -47,17 +47,8 @@ const Experience = () => {
   ];
 
   return (
-    <section id="experience" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900 relative overflow-hidden">
-      {/* Ocean Wave Background */}
-      <div className="absolute inset-0 opacity-10">
-        <svg className="absolute bottom-0 left-0 w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-          <path fill="#0284c7" fillOpacity="0.3" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-      </div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-20 right-20 w-16 h-16 rounded-full bg-blue-200/30 dark:bg-blue-800/30 animate-float"></div>
-      <div className="absolute bottom-20 left-20 w-20 h-20 rounded-full bg-cyan-200/30 dark:bg-cyan-800/30 animate-float animation-delay-2000"></div>
+    <section id="experience" className="py-20 bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-teal-900 relative overflow-hidden">
+      {/* Clean gradient background - no waves, mountains, or bubbles */}
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
@@ -75,13 +66,13 @@ const Experience = () => {
             whileInView={{ width: '80px' }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="h-1 bg-gradient-to-r from-blue-500 to-cyan-600 mx-auto"
+            className="h-1 bg-gradient-to-r from-teal-500 to-blue-600 mx-auto"
           ></motion.div>
         </div>
         
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-blue-500 to-cyan-600 hidden md:block"></div>
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-teal-500 to-blue-600 hidden md:block"></div>
           
           <div className="space-y-12">
             {experiences.map((exp, index) => (
@@ -90,7 +81,7 @@ const Experience = () => {
                 className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? 'md:flex-row-reverse' : ''} items-center`}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 border-4 border-white dark:border-gray-900 z-10 hidden md:block"></div>
+                <div className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-r from-teal-500 to-blue-600 border-4 border-white dark:border-gray-900 z-10 hidden md:block"></div>
                 
                 <div className="w-full md:w-5/12 mb-8 md:mb-0">
                   <motion.div 
@@ -98,16 +89,16 @@ const Experience = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-blue-100 dark:border-blue-800"
+                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-teal-100 dark:border-teal-800"
                   >
                     <h3 className="text-xl font-bold mb-2 font-poppins">{exp.position}</h3>
-                    <div className="flex items-center text-cyan-600 dark:text-cyan-400 mb-2">
+                    <div className="flex items-center text-teal-600 dark:text-blue-400 mb-2">
                       <span className="font-medium font-poppins">{exp.company}</span>
                       <span className="mx-2">•</span>
                       <FaMapMarkerAlt className="mr-1" />
                       <span className="font-poppins">{exp.location}</span>
                     </div>
-                    <div className="flex items-center text-cyan-600 dark:text-cyan-400 mb-4">
+                    <div className="flex items-center text-teal-600 dark:text-blue-400 mb-4">
                       <FaCalendarAlt className="mr-2" />
                       <span className="font-poppins">{exp.period}</span>
                     </div>
@@ -118,9 +109,9 @@ const Experience = () => {
                       ))}
                     </ul>
                     
-                    {/* Decorative anchor */}
-                    <div className="absolute bottom-4 right-4 text-blue-500/20">
-                      <FaAnchor className="text-2xl" />
+                    {/* Decorative tree */}
+                    <div className="absolute bottom-4 right-4 text-teal-500/20">
+                      <FaTree className="text-2xl" />
                     </div>
                   </motion.div>
                 </div>

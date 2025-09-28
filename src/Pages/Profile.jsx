@@ -1,7 +1,7 @@
 // Profile.js
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Aadhar, About, Blog, Certifications, Contact, Education, EmergencyContact, Experience, Footer, Header, Hero, Medical, MeetingRequest, MyTeam, PaymentQR, ProfileAnalytics, ProfileTemplate, Projects, Skills, Testimonials, Videos, YouTube } from '../Components/Profile/Index';
+import { Documents, About, Blog, Certifications, Contact, Education, EmergencyContact, Experience, Footer, Header, Hero, Medical, MeetingRequest, MyTeam, PaymentQR, ProfileAnalytics,  Projects, Skills, Testimonials, Videos, YouTube,Gallery,Family,Playlist } from '../Components/Profile/Index';
 
 function Profile() {
     const [darkMode, setDarkMode] = useState(false);
@@ -46,6 +46,7 @@ function Profile() {
                 <Experience />
                 <Education />
                 <Skills />
+                <Gallery />
                 <Projects />
                 <Certifications />
                 <Testimonials />
@@ -53,11 +54,12 @@ function Profile() {
                 <Blog />
                 <YouTube />
                 <Videos />
+                <Playlist />
                 <Medical />
+                <Family />
                 <EmergencyContact />
-                <Aadhar />
+                <Documents />
                 <MeetingRequest />
-                <ProfileTemplate />
                 <ProfileAnalytics />
                 <PaymentQR />
                 <Contact />
@@ -69,3 +71,5 @@ function Profile() {
 }
 
 export default Profile;
+
+

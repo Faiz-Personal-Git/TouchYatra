@@ -121,7 +121,7 @@ const SignIn = () => {
 
       showAlert({ type: "success", message: jsonResponse.message || "Login successful!" });
 
-      navigate("Profile");
+      navigate("EditProfile");
     } catch (err) {
       console.error("Network or unexpected error:", err);
       showAlert({ type: "error", message: "Something went wrong. Please try again later." });

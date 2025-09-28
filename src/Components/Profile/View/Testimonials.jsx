@@ -1,49 +1,38 @@
 // components/Testimonials.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaQuoteLeft, FaStar, FaWater, FaFish } from 'react-icons/fa';
+import { FaQuoteLeft, FaStar, FaMountain, FaTree } from 'react-icons/fa';
 
 const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
       name: "Sarah Johnson",
-      position: "CEO, OceanTech Inc.",
-      content: "John is an exceptional developer who delivered our project ahead of schedule. His attention to detail and problem-solving skills are outstanding. I highly recommend him for any complex web development project.",
+      position: "CEO, SummitTech Inc.",
+      content: "Alex is an exceptional developer who delivered our project ahead of schedule. His attention to detail and problem-solving skills are outstanding. I highly recommend him for any complex web development project.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
     },
     {
       id: 2,
       name: "Michael Chen",
-      position: "Product Manager, DeepSea Solutions",
-      content: "Working with John was a pleasure. He has a deep understanding of both frontend and backend technologies, which made our project seamless. His communication skills and professionalism are top-notch.",
+      position: "Product Manager, Forest Solutions",
+      content: "Working with Alex was a pleasure. He has a deep understanding of both frontend and backend technologies, which made our project seamless. His communication skills and professionalism are top-notch.",
       rating: 5,
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
     },
     {
       id: 3,
       name: "Emily Rodriguez",
-      position: "CTO, Coral Digital",
-      content: "John's expertise in React and Node.js transformed our application. He implemented features we thought were impossible and optimized performance beyond our expectations. A true professional.",
+      position: "CTO, Alpine Digital",
+      content: "Alex's expertise in React and Node.js transformed our application. He implemented features we thought were impossible and optimized performance beyond our expectations. A true professional.",
       rating: 4,
       avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
     }
   ];
 
   return (
-    <section id="testimonials" className="py-20 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900 dark:to-blue-900 relative overflow-hidden">
-      {/* Ocean Wave Background */}
-      <div className="absolute inset-0 opacity-10">
-        <svg className="absolute top-0 left-0 w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-          <path fill="#06b6d4" fillOpacity="0.3" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-      </div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-20 w-16 h-16 rounded-full bg-cyan-200/30 dark:bg-cyan-800/30 animate-float"></div>
-      <div className="absolute bottom-20 right-20 w-20 h-20 rounded-full bg-blue-200/30 dark:bg-blue-800/30 animate-float animation-delay-2000"></div>
-      
+    <section id="testimonials" className="py-20 bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-teal-900 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <motion.h2 
@@ -53,18 +42,18 @@ const Testimonials = () => {
             transition={{ duration: 0.5 }}
             className="text-3xl font-bold mb-2 font-playfair"
           >
-            Testimonials
+            Client Testimonials
           </motion.h2>
           <motion.div 
             initial={{ width: 0 }}
             whileInView={{ width: '80px' }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="h-1 bg-gradient-to-r from-cyan-500 to-blue-600 mx-auto"
+            className="h-1 bg-gradient-to-r from-teal-500 to-blue-600 mx-auto"
           ></motion.div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div 
               key={testimonial.id}
@@ -72,52 +61,59 @@ const Testimonials = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-cyan-100 dark:border-cyan-800 relative overflow-hidden"
+              className="relative group"
             >
-              {/* Decorative fish */}
-              <motion.div 
-                animate={{ x: [0, 20, 0] }}
-                transition={{ repeat: Infinity, duration: 10 }}
-                className="absolute top-4 right-4 text-cyan-500/20"
-              >
-                <FaFish className="text-3xl" />
-              </motion.div>
-              
-              <div className="flex items-center mb-4">
-                <img 
-                  src={testimonial.avatar} 
-                  alt={testimonial.name} 
-                  className="w-16 h-16 rounded-full object-cover mr-4 border-2 border-cyan-500"
-                />
-                <div>
-                  <h4 className="font-bold text-lg font-poppins">{testimonial.name}</h4>
-                  <p className="text-cyan-600 dark:text-cyan-400 font-poppins">{testimonial.position}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+                {/* Top decorative element */}
+                <div className="h-2 bg-gradient-to-r from-teal-500 to-blue-600"></div>
+                
+                <div className="p-6">
+                  {/* Quote icon */}
+                  <div className="text-teal-500 dark:text-blue-400 mb-4">
+                    <FaQuoteLeft className="text-3xl opacity-20" />
+                  </div>
+                  
+                  {/* Testimonial content */}
+                  <p className="text-gray-700 dark:text-gray-300 mb-6 italic font-poppins">
+                    "{testimonial.content}"
+                  </p>
+                  
+                  {/* Star rating */}
+                  <div className="flex mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar 
+                        key={i} 
+                        className={i < testimonial.rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"} 
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Person info */}
+                  <div className="flex items-center">
+                    <img 
+                      src={testimonial.avatar} 
+                      alt={testimonial.name} 
+                      className="w-12 h-12 rounded-full object-cover mr-4 border-2 border-teal-500"
+                    />
+                    <div>
+                      <h4 className="font-bold text-gray-900 dark:text-white font-poppins">{testimonial.name}</h4>
+                      <p className="text-sm text-teal-600 dark:text-blue-400 font-poppins">{testimonial.position}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar 
-                    key={i} 
-                    className={i < testimonial.rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"} 
-                  />
-                ))}
-              </div>
-              
-              <div className="relative">
-                <FaQuoteLeft className="text-cyan-500 dark:text-cyan-400 text-2xl absolute -top-4 -left-2 opacity-20" />
-                <p className="relative z-10 italic font-poppins">"{testimonial.content}"</p>
-              </div>
-              
-              {/* Wave decoration */}
-              <div className="absolute bottom-0 left-0 w-full h-8 overflow-hidden">
-                <svg className="relative block w-full h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                  <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
-                    className="fill-cyan-100 dark:fill-cyan-900"></path>
-                </svg>
+              {/* Decorative tree icon */}
+              <div className="absolute -top-4 -right-4 text-teal-500/20">
+                <FaTree className="text-4xl" />
               </div>
             </motion.div>
           ))}
+        </div>
+        
+        {/* Bottom decorative element */}
+        <div className="mt-16 flex justify-center">
+          <div className="w-24 h-1 bg-gradient-to-r from-teal-500 to-blue-600 rounded-full"></div>
         </div>
       </div>
     </section>

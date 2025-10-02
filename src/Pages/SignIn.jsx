@@ -115,13 +115,13 @@ const SignIn = () => {
       }
 
       if (!res.ok) {
-        showAlert({ type: "error", message: jsonResponse.message || "Something went wrong" });
+        showAlert({ type: "error", message: jsonResponse.Message || "Something went wrong" });
         return;
       }
 
-      showAlert({ type: "success", message: jsonResponse.message || "Login successful!" });
+      showAlert({ type: "success", message: jsonResponse.Message || "Login successful!" });
 
-      navigate("EditProfile");
+      navigate("Edit/" + jsonResponse.Data.accessToken);
     } catch (err) {
       console.error("Network or unexpected error:", err);
       showAlert({ type: "error", message: "Something went wrong. Please try again later." });

@@ -45,6 +45,21 @@ const userSchema = new Schema(
     EmailVerificationToken: {
       type: String,
     },
+    Description: {
+      type: String,
+    },
+    Roles: {
+      type: String,
+    },
+    Availability: {
+      type: String,
+    },
+    ProfileImage: {
+      type: String,
+    },
+    BackgroundImage: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

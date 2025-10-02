@@ -15,30 +15,8 @@ const Footer = () => {
         <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern" style={{ backgroundImage: 'radial-gradient(circle, #0d9488 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
       </div>
       
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-20 w-16 h-16 rounded-full bg-teal-500/20 animate-float"></div>
-      <div className="absolute bottom-20 right-20 w-20 h-20 rounded-full bg-blue-500/20 animate-float animation-delay-2000"></div>
-      <div className="absolute top-1/2 left-1/4 w-12 h-12 rounded-full bg-teal-500/15 animate-float animation-delay-4000"></div>
-      
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-10">
-          <motion.h2 
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl font-bold mb-2 font-playfair text-blue-900 dark:text-blue-100"
-          >
-            Let's Connect
-          </motion.h2>
-          <motion.div 
-            initial={{ width: 0 }}
-            whileInView={{ width: '80px' }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="h-1 bg-gradient-to-r from-teal-500 to-blue-600 mx-auto rounded-full"
-          ></motion.div>
-        </div>
+      
         
         <div className="max-w-6xl mx-auto">
           <motion.div 

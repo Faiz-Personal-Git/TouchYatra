@@ -1,7 +1,7 @@
 // Profile.js
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Documents, About, Blog, Certifications, Contact, Education, EmergencyContact, Experience, Footer, Header, Hero, Medical, MeetingRequest, MyTeam, PaymentQR, ProfileAnalytics,  Projects, Skills, Testimonials, Videos, YouTube,Gallery,Family,Playlist } from '../Components/Profile/Index';
+import { Documents, About, Blog, Certifications, Contact, Education, EmergencyContact, Experience, Footer, Header, Hero, Medical, MeetingRequest, MyTeam, PaymentQR, ProfileAnalytics,  Projects, Skills, Testimonials, Videos, YouTube,Gallery,Family,Playlist } from '../Components/Profile/ViewIndex';
 
 function Profile() {
     const [darkMode, setDarkMode] = useState(false);

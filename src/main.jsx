@@ -3,7 +3,7 @@ import './index.css'
 import App from './App.jsx'
 import { AlertProvider } from "../src/Components/Alert.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom"; 
-import { SignIn, SignUp,Profile } from "../src/Pages/Index.js"
+import { SignIn, SignUp,Profile,EditProfile } from "../src/Pages/Index.js"
 
 createRoot(document.getElementById('root')).render(
   <AlertProvider>
@@ -13,6 +13,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/SignIn' element={<SignIn />} />
         <Route path='/SignUp' element={<SignUp />} />
         <Route path='/Profile' element={<Profile />} />
+        <Route path='/Edit' element={<EditProfile />} />
       </Routes>
     </BrowserRouter>
   </AlertProvider>

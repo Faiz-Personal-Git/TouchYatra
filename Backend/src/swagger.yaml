@@ -158,7 +158,148 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /auth/getLoggerDetails:
+    get:
+      tags: 
+        - Authentication
+      summary: Get logged-in user details
+      description: >
+        Fetches the authenticated user's details using a valid **access token**.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User details fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    example:
+                      _id: "60f8c2c1d4b2f1e2f4c12a34"
+                      name: "John Doe"
+                      email: "john@example.com"
+                  message:
+                    type: string
+                    example: User details fetched successfully
+        '401':
+          description: Unauthorized — Invalid or expired access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/logout:
+    get:
+      tags: 
+        - Authentication
+      summary: Logout user
+      description: >
+        Logs out the current user by clearing cookies and removing the stored refresh token.
+        Requires a valid **access token**.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    example: {}
+                  message:
+                    type: string
+                    example: User logged Out
+        '401':
+          description: Unauthorized — Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /refereshAccessToken:
+    get:
+      tags: 
+        - Authentication
+      summary: Refresh access token
+      description: >
+        Generates a new **access token** and **refresh token** if the provided refresh token is valid.
+        <br><br>
+        You can send the refresh token through one of these:
+        - **Cookie:** `refreshToken`
+        - **Header:** `X-Authorization-Refresh`
+        - **Body:** `{ "refreshToken": "<token>" }`
+      parameters:
+        - name: X-Authorization-Refresh
+          in: header
+          required: false
+          schema:
+            type: string
+          description: Refresh token sent via custom header
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token sent in the request body
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Access token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+                      refreshToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+                  message:
+                    type: string
+                    example: Access token refreshed
+        '401':
+          description: Unauthorized — Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+                
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Include your access token as:
+        ```
+        Authorization: Bearer <access_token>
+        ```
+
   schemas:
     ApiResponse:
       type: object

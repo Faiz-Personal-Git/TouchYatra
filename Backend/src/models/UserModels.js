@@ -47,18 +47,28 @@ const userSchema = new Schema(
     },
     Description: {
       type: String,
+      trim: true,
     },
     Roles: {
       type: String,
+      trim: true,
     },
     Availability: {
       type: String,
+      trim: true,
     },
     ProfileImage: {
       type: String,
+      trim: true,
     },
     BackgroundImage: {
       type: String,
+      trim: true,
+    },
+    UserUniqueId: {
+      type: String,
+      unique: true,
+      trim: true,
     },
   },
   { timestamps: true }

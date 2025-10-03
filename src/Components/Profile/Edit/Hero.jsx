@@ -19,7 +19,7 @@ const Hero = ({ darkMode }) => {
     backgroundFile: null,
   });
 
-  // State for social links (separate table)
+ // State for social links (separate table)
   const [socialLinks, setSocialLinks] = useState([
     { id: 1, icon: 'FaGithub', url: "https://github.com", color: "hover:text-white" },
     { id: 2, icon: 'FaLinkedin', url: "https://linkedin.com", color: "hover:text-blue-300" },
@@ -30,7 +30,7 @@ const Hero = ({ darkMode }) => {
     { id: 7, icon: 'FaTiktok', url: "https://tiktok.com", color: "hover:text-pink-400" },
     { id: 8, icon: 'FaDiscord', url: "https://discord.com", color: "hover:text-indigo-400" },
     { id: 9, icon: 'FaTelegram', url: "https://telegram.com", color: "hover:text-blue-400" }
-  ]);
+  ]); 
 
   // UI state
   const [previewImage, setPreviewImage] = useState(null);
@@ -193,45 +193,53 @@ const Hero = ({ darkMode }) => {
     console.log('Saving social links:', socialLinks);
     showNotification('Social links saved successfully');
   };
-  
+
+  // Show notification
+  const showNotification = (message, type = 'success') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+  };
+
   // Theme classes
-  const bgClass = darkMode ? 'bg-gray-900' : 'bg-gray-50';
-  const cardBgClass = darkMode ? 'bg-gray-800' : 'bg-gray-50';
-  const containerBgClass = darkMode ? 'bg-gray-800' : 'bg-white';
-  const textClass = darkMode ? 'text-gray-200' : 'text-gray-800';
+  const bgClass = darkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 to-blue-50';
+  const cardBgClass = darkMode ? 'bg-gray-800/80 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm';
+  const containerBgClass = darkMode ? 'bg-gray-800/90 backdrop-blur-md' : 'bg-white/90 backdrop-blur-md';
+  const textClass = darkMode ? 'text-gray-100' : 'text-gray-800';
   const textSecondaryClass = darkMode ? 'text-gray-300' : 'text-gray-600';
   const labelClass = darkMode ? 'text-gray-300' : 'text-gray-700';
-  const borderClass = darkMode ? 'border-gray-600' : 'border-gray-300';
-  const inputBgClass = darkMode ? 'bg-gray-700' : 'bg-white';
+  const borderClass = darkMode ? 'border-gray-700' : 'border-gray-200';
+  const inputBgClass = darkMode ? 'bg-gray-700/80' : 'bg-white';
   const inputBorderClass = darkMode ? 'border-gray-600' : 'border-gray-300';
   const inputFocusClass = darkMode ? 'focus:ring-blue-500' : 'focus:ring-blue-500';
   const buttonBgClass = darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600';
-  const iconBgClass = darkMode ? 'bg-gray-700' : 'bg-gray-200';
+  const iconBgClass = darkMode ? 'bg-gray-700' : 'bg-gray-100';
   const redTextClass = darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-700';
   const tabActiveClass = darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white';
-  const tabInactiveClass = darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700';
-  const dragActiveClass = darkMode ? 'border-blue-500 bg-blue-900/20' : 'border-blue-400 bg-blue-100';
-  const dragInactiveClass = darkMode ? 'border-gray-600 bg-gray-700/50' : 'border-gray-300 bg-gray-100';
+  const tabInactiveClass = darkMode ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-100 text-gray-700';
+  const dragActiveClass = darkMode ? 'border-blue-500 bg-blue-900/30' : 'border-blue-400 bg-blue-100';
+  const dragInactiveClass = darkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-300 bg-gray-100';
+  const shadowClass = darkMode ? 'shadow-xl shadow-blue-900/20' : 'shadow-xl shadow-blue-200/30';
 
   return (
     <div className={`min-h-screen p-6 ${bgClass}`}>
       {/* Notification */}
       {notification.show && (
-        <div className={`fixed top-4 right-4 px-4 py-2 rounded-md shadow-lg z-50 ${
+        <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 flex items-center ${
           notification.type === 'success' ? 'bg-green-500' : 
           notification.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        } text-white`}>
+        } text-white animate-fadeIn`}>
+          <FaSave className="mr-2" />
           {notification.message}
         </div>
       )}
 
       {/* Image Preview Modal */}
       {previewImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewImage(null)}>
-          <div className="relative max-w-4xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
-            <img src={previewImage} alt="Full View" className="w-full h-auto rounded-lg shadow-lg" />
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm" onClick={() => setPreviewImage(null)}>
+          <div className="relative max-w-4xl w-full mx-4 animate-zoomIn" onClick={(e) => e.stopPropagation()}>
+            <img src={previewImage} alt="Full View" className="w-full h-auto rounded-xl shadow-2xl" />
             <button
-              className="absolute top-2 right-2 text-white text-2xl bg-black bg-opacity-50 hover:bg-opacity-80 rounded-full px-2"
+              className="absolute top-3 right-3 text-white text-2xl bg-black/50 hover:bg-black/80 rounded-full p-2 transition-all duration-300"
               onClick={() => setPreviewImage(null)}
             >
               <FaTimes />
@@ -240,7 +248,7 @@ const Hero = ({ darkMode }) => {
         </div>
       )}
 
-      <div className={`max-w-6xl mx-auto rounded-xl shadow-md overflow-hidden ${containerBgClass}`}>
+      <div className={`max-w-6xl mx-auto rounded-2xl overflow-hidden ${containerBgClass} ${shadowClass}`}>
         <div className="p-8">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -248,14 +256,14 @@ const Hero = ({ darkMode }) => {
             transition={{ duration: 0.5 }}
             className="mb-8"
           >
-            <h1 className={`text-3xl font-bold ${textClass}`}>Edit Hero Section</h1>
-            <p className={`${textSecondaryClass} mt-2`}>Customize your homepage hero section</p>
+            <h1 className={`text-4xl font-bold ${textClass}`}>Edit Hero Section</h1>
+            <p className={`${textSecondaryClass} mt-2 text-lg`}>Customize your homepage hero section</p>
           </motion.div>
 
           {/* Tabs for different sections */}
-          <div className="flex mb-6 border-b">
+          <div className="flex mb-8 border-b">
             <button
-              className={`px-4 py-2 font-medium rounded-t-lg ${
+              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${
                 activeTab === 'details' ? tabActiveClass : tabInactiveClass
               }`}
               onClick={() => setActiveTab('details')}
@@ -263,7 +271,7 @@ const Hero = ({ darkMode }) => {
               Hero Details
             </button>
             <button
-              className={`px-4 py-2 font-medium rounded-t-lg ${
+              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${
                 activeTab === 'social' ? tabActiveClass : tabInactiveClass
               }`}
               onClick={() => setActiveTab('social')}
@@ -287,30 +295,30 @@ const Hero = ({ darkMode }) => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1, duration: 0.5 }}
-                    className={`p-6 rounded-lg ${cardBgClass}`}
+                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Profile Image</h2>
                     
                     <div className="flex flex-col items-center">
                       <div className="relative mb-4">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-teal-500">
+                        <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-teal-500 shadow-lg">
                           <img
                             onClick={() => setPreviewImage(heroDetails.profileImage)}
                             src={heroDetails.profileImage}
                             alt="Profile Preview"
-                            className="w-full h-full object-cover cursor-pointer"
+                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                         <button
                           onClick={() => removeImage('profile')}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-300 shadow-lg"
                         >
                           <FaTimesCircle />
                         </button>
                       </div>
                       
                       <div 
-                        className={`w-full p-6 border-2 border-dashed rounded-lg text-center cursor-pointer transition-all ${
+                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
                           dragActive.profile ? dragActiveClass : dragInactiveClass
                         }`}
                         onDragEnter={(e) => handleDrag(e, 'profile')}
@@ -319,7 +327,7 @@ const Hero = ({ darkMode }) => {
                         onDrop={(e) => handleDrop(e, 'profile')}
                         onClick={() => openFileDialog('profile')}
                       >
-                        <FaCloudUploadAlt className={`mx-auto h-10 w-10 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+                        <FaCloudUploadAlt className={`mx-auto h-12 w-12 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
                         <p className={`mt-2 text-sm ${textClass}`}>
                           <span className="font-medium">Click to upload</span> or drag and drop
                         </p>
@@ -342,30 +350,30 @@ const Hero = ({ darkMode }) => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className={`p-6 rounded-lg ${cardBgClass}`}
+                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Background Image</h2>
                     
                     <div className="flex flex-col items-center">
                       <div className="relative mb-4 w-full">
-                        <div className="w-full h-48 rounded-lg overflow-hidden border-4 border-teal-500">
+                        <div className="w-full h-56 rounded-xl overflow-hidden border-4 border-teal-500 shadow-lg">
                           <img
                             onClick={() => setPreviewImage(heroDetails.backgroundImage)}
                             src={heroDetails.backgroundImage}
                             alt="Background Preview"
-                            className="w-full h-full object-cover cursor-pointer"
+                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                         <button
                           onClick={() => removeImage('background')}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          className="absolute top-3 right-3 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-300 shadow-lg"
                         >
                           <FaTimesCircle />
                         </button>
                       </div>
                       
                       <div 
-                        className={`w-full p-6 border-2 border-dashed rounded-lg text-center cursor-pointer transition-all ${
+                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
                           dragActive.background ? dragActiveClass : dragInactiveClass
                         }`}
                         onDragEnter={(e) => handleDrag(e, 'background')}
@@ -374,7 +382,7 @@ const Hero = ({ darkMode }) => {
                         onDrop={(e) => handleDrop(e, 'background')}
                         onClick={() => openFileDialog('background')}
                       >
-                        <FaCloudUploadAlt className={`mx-auto h-10 w-10 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+                        <FaCloudUploadAlt className={`mx-auto h-12 w-12 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
                         <p className={`mt-2 text-sm ${textClass}`}>
                           <span className="font-medium">Click to upload</span> or drag and drop
                         </p>
@@ -400,7 +408,7 @@ const Hero = ({ darkMode }) => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1, duration: 0.5 }}
-                    className={`p-6 rounded-lg ${cardBgClass}`}
+                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Name & Status</h2>
 
@@ -411,7 +419,7 @@ const Hero = ({ darkMode }) => {
                           type="text"
                           value={heroDetails.firstName}
                           onChange={(e) => handleDetailChange('firstName', e.target.value)}
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                         />
                       </div>
 
@@ -421,7 +429,7 @@ const Hero = ({ darkMode }) => {
                           type="text"
                           value={heroDetails.lastName}
                           onChange={(e) => handleDetailChange('lastName', e.target.value)}
-                          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                         />
                       </div>
                     </div>
@@ -431,7 +439,7 @@ const Hero = ({ darkMode }) => {
                       {availabilityOptions.map((item) => (
                         <label
                           key={item.value}
-                          className="inline-flex items-center text-sm cursor-pointer"
+                          className="inline-flex items-center text-sm cursor-pointer p-2 rounded-lg hover:bg-gray-200/20 transition-colors duration-300"
                         >
                           <input
                             type="radio"
@@ -452,7 +460,7 @@ const Hero = ({ darkMode }) => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className={`p-6 rounded-lg ${cardBgClass}`}
+                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Roles (Typewriter)</h2>
                     <input
@@ -460,7 +468,7 @@ const Hero = ({ darkMode }) => {
                       value={heroDetails.roles}
                       onChange={(e) => handleDetailChange("roles", e.target.value)}
                       placeholder="e.g. Developer, Designer, Creator"
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                     />
                     <p className={`text-sm mt-2 ${textSecondaryClass}`}>
                       Separate multiple roles with commas
@@ -472,15 +480,15 @@ const Hero = ({ darkMode }) => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
-                    className={`p-6 rounded-lg ${cardBgClass}`}
+                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Description</h2>
                     <textarea
                       value={heroDetails.description}
                       onChange={(e) => handleDetailChange('description', e.target.value)}
-                      rows={4}
+                      rows={5}
                       placeholder="Write a brief description about yourself..."
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                     />
                   </motion.div>
                 </div>
@@ -491,13 +499,13 @@ const Hero = ({ darkMode }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="mt-8 flex justify-end"
+                className="mt-10 flex justify-end"
               >
                 <button
                   onClick={saveHeroDetails}
-                  className="flex items-center px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+                  className="flex items-center px-8 py-4 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-xl font-bold text-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <FaSave className="mr-2" />
+                  <FaSave className="mr-3 text-xl" />
                   Save Hero Details
                 </button>
               </motion.div>
@@ -511,12 +519,12 @@ const Hero = ({ darkMode }) => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              <div className={`p-6 rounded-lg ${cardBgClass}`}>
+              <div className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}>
                 <div className="flex justify-between items-center mb-6">
                   <h2 className={`text-xl font-semibold ${textClass}`}>Social Links</h2>
                   <button
                     onClick={addSocialLink}
-                    className={`flex items-center px-4 py-2 rounded-md transition-colors ${buttonBgClass} text-white`}
+                    className={`flex items-center px-5 py-3 rounded-xl transition-all duration-300 ${buttonBgClass} text-white font-medium hover:shadow-lg transform hover:-translate-y-1`}
                   >
                     <FaPlus className="mr-2" />
                     Add Link
@@ -527,20 +535,20 @@ const Hero = ({ darkMode }) => {
                   <table className="min-w-full divide-y divide-gray-700">
                     <thead>
                       <tr>
-                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Platform</th>
-                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>URL</th>
-                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Preview</th>
-                        <th className={`px-4 py-3 text-right text-xs font-medium uppercase tracking-wider ${textClass}`}>Actions</th>
+                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Platform</th>
+                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>URL</th>
+                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Preview</th>
+                        <th className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${textClass}`}>Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
                       {socialLinks.map((link) => (
-                        <tr key={link.id}>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                        <tr key={link.id} className="hover:bg-gray-200/10 transition-colors duration-300">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <select
                               value={link.icon}
                               onChange={(e) => handleSocialLinkChange(link.id, 'icon', e.target.value)}
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                             >
                               {iconOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -549,29 +557,29 @@ const Hero = ({ darkMode }) => {
                               ))}
                             </select>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-6 py-4">
                             <input
                               type="text"
                               value={link.url}
                               onChange={(e) => handleSocialLinkChange(link.id, 'url', e.target.value)}
                               placeholder="https://example.com"
-                              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass}`}
+                              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                             />
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${iconBgClass}`}>
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${iconBgClass} shadow-md`}>
                                 {iconOptions.find(opt => opt.value === link.icon)?.icon || <FaGithub />}
                               </div>
-                              <span className={`ml-2 text-sm ${textClass}`}>
+                              <span className={`ml-3 text-sm ${textClass}`}>
                                 {iconOptions.find(opt => opt.value === link.icon)?.label || 'GitHub'}
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-right">
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
                             <button
                               onClick={() => removeSocialLink(link.id)}
-                              className={`p-2 rounded-md ${redTextClass}`}
+                              className={`p-3 rounded-xl ${redTextClass} hover:bg-red-500/10 transition-all duration-300`}
                             >
                               <FaTrash />
                             </button>
@@ -583,11 +591,11 @@ const Hero = ({ darkMode }) => {
                 </div>
 
                 {socialLinks.length === 0 && (
-                  <div className="text-center py-8">
-                    <p className={`${textSecondaryClass}`}>No social links added yet</p>
+                  <div className="text-center py-12">
+                    <p className={`${textSecondaryClass} text-lg`}>No social links added yet</p>
                     <button
                       onClick={addSocialLink}
-                      className={`mt-4 flex items-center justify-center px-4 py-2 rounded-md transition-colors ${buttonBgClass} text-white mx-auto`}
+                      className={`mt-6 flex items-center justify-center px-6 py-3 rounded-xl transition-all duration-300 ${buttonBgClass} text-white font-medium hover:shadow-lg transform hover:-translate-y-1 mx-auto`}
                     >
                       <FaPlus className="mr-2" />
                       Add Your First Link
@@ -601,13 +609,13 @@ const Hero = ({ darkMode }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="mt-8 flex justify-end"
+                className="mt-10 flex justify-end"
               >
                 <button
                   onClick={saveSocialLinks}
-                  className="flex items-center px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+                  className="flex items-center px-8 py-4 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-xl font-bold text-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <FaSave className="mr-2" />
+                  <FaSave className="mr-3 text-xl" />
                   Save Social Links
                 </button>
               </motion.div>
@@ -615,6 +623,23 @@ const Hero = ({ darkMode }) => {
           )}
         </div>
       </div>
+      
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes zoomIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+        .animate-zoomIn {
+          animation: zoomIn 0.3s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };

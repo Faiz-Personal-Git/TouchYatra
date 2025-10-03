@@ -25,8 +25,10 @@ const generateAccessAndRefereshTokens = async (userId) => {
 }
 
 export const registerUser = asyncHandler(async (req, res) => {
-    
+
     const { FirstName, LastName, DisplayName, Email, Password, IsEmailVerified } = req.body;
+
+    const UserUniqueId = `${"USR"}${Math.floor(Date.now() / 1000)}`
 
     // Check if user already exists
     const existingUser = await UserModel.findOne({ Email });
@@ -72,7 +74,8 @@ export const registerUser = asyncHandler(async (req, res) => {
         DisplayName,
         Email,
         Password,
-        IsEmailVerified
+        IsEmailVerified,
+        UserUniqueId
     });
 
     newUser.EmailVerificationToken = newUser.generateEmailVerificationToken();
@@ -148,7 +151,7 @@ export const googleLogin = asyncHandler(async (req, res) => {
     // Find user by email
     const user = await UserModel.findOne({ Email });
     if (!user) {
-       throw new ApiError(400, `The email address "${Email}" is not registered. Please sign up before attempting to log in.`);
+        throw new ApiError(400, `The email address "${Email}" is not registered. Please sign up before attempting to log in.`);
 
     }
     if (!user.IsEmailVerified) {

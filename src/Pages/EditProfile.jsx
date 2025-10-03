@@ -12,7 +12,8 @@ import {
   FaLeaf, FaTree, FaWater, FaStar, FaFire, FaBolt, FaGem, FaSnowflake, FaFeather,
   FaDragon, FaKiwiBird, FaHorse, FaFish, FaSpider, FaBug, FaCat, FaDog, FaCrow,
   FaIdCard, FaImages, FaImage, FaUsers, FaMoneyBill, FaMusic, FaFileSignature, FaUserMd,
-  FaRocket, FaChartLine, FaLightbulb, FaTrophy, FaClock, FaGlobe, FaHeart, FaMedal
+  FaRocket, FaChartLine, FaLightbulb, FaTrophy, FaClock, FaGlobe, FaHeart, FaMedal,
+  FaGlobe as FaGlobeAlt
 } from 'react-icons/fa';
 
 import { Hero, About, Experience, Education, Skills, Gallery, Projects, Certifications, Testimonials, MyTeam, Blog, YouTube, Videos, Medical, EmergencyContact, Documents, ProfileAnalytics, PaymentQR, Family, Playlist } from "../Components/Profile/EditIndex";
@@ -26,11 +27,6 @@ const EditProfile = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [headerSearch, setHeaderSearch] = useState('');
-  const [notifications, setNotifications] = useState([
-    { id: 1, title: 'New message', description: 'You have a new message from Alex', time: '2 min ago', read: false },
-    { id: 2, title: 'Profile view', description: 'Your profile was viewed 50 times today', time: '1 hour ago', read: true },
-    { id: 3, title: 'Update available', description: 'New version of the admin panel is available', time: '3 hours ago', read: true }
-  ]);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedMode = localStorage.getItem('darkMode');
@@ -116,7 +112,6 @@ const EditProfile = () => {
       accent: 'purple',
       natureIcon: <FaFeather />
     },
-
     {
       id: 'experience',
       name: 'Experience',
@@ -278,6 +273,15 @@ const EditProfile = () => {
       color: 'from-indigo-400 to-purple-500',
       accent: 'indigo',
       natureIcon: <FaMusic />
+    },
+    {
+      id: 'language',
+      name: 'Language',
+      icon: <FaGlobe />,
+      description: 'Change interface language',
+      color: 'from-indigo-400 to-blue-500',
+      accent: 'indigo',
+      natureIcon: <FaGlobeAlt />
     }
   ];
 
@@ -946,53 +950,6 @@ const EditProfile = () => {
 
               {/* Creative Profile Section */}
               <div className="flex items-center space-x-4">
-                {/* Notifications */}
-                <div className="relative">
-                  <button className="p-3 rounded-full bg-white dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors relative shadow-sm">
-                    <FaBell />
-                    {notifications.some(n => !n.read) && (
-                      <motion.span
-                        className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    )}
-                  </button>
-
-                  {/* Notifications Dropdown */}
-                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 opacity-0 invisible hover:opacity-100 hover:visible transition-all duration-300 transform origin-top-right">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                      <h3 className="font-semibold text-gray-800 dark:text-white">Notifications</h3>
-                    </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.map(notification => (
-                        <div
-                          key={notification.id}
-                          className={`p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${!notification.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
-                        >
-                          <div className="flex">
-                            <div className="mr-3 mt-1">
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-teal-400 to-cyan-500 flex items-center justify-center text-white">
-                                <FaBell size={14} />
-                              </div>
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-800 dark:text-white">{notification.title}</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">{notification.description}</p>
-                              <div className="flex justify-between mt-1">
-                                <span className="text-xs text-gray-500 dark:text-gray-500">{notification.time}</span>
-                                {!notification.read && <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">New</span>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="p-3 text-center">
-                      <button className="text-sm text-teal-600 dark:text-teal-400 font-medium">View All Notifications</button>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Profile Dropdown */}
                 <div className="relative group">

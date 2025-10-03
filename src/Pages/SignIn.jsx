@@ -85,7 +85,7 @@ const SignIn = () => {
 
       showAlert({ type: "success", message: jsonResponse.message || "Login successful!" });
 
-      navigate("/Profile");
+      navigate("/Edit");
     } catch (error) {
       console.error("Google Login Error:", error);
       showAlert({ type: "error", message: error.message });
@@ -95,7 +95,7 @@ const SignIn = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      debugger
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const signinUrl = import.meta.env.VITE_SIGNIN_API;
       const res = await fetch(`${apiUrl}${signinUrl}`, {
@@ -118,10 +118,11 @@ const SignIn = () => {
         showAlert({ type: "error", message: jsonResponse.Message || "Something went wrong" });
         return;
       }
+      debugger
 
       showAlert({ type: "success", message: jsonResponse.Message || "Login successful!" });
 
-      navigate("Edit/" + jsonResponse.Data.accessToken);
+      navigate("/Edit");
     } catch (err) {
       console.error("Network or unexpected error:", err);
       showAlert({ type: "error", message: "Something went wrong. Please try again later." });

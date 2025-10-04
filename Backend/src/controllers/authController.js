@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { asyncHandler, ApiResponse, ApiError, config } from "../utils/index.js";
 import { UserModel } from "../models/index.js";
 
- const cookieOptions = {
+const cookieOptions = {
     httpOnly: true,
     secure: true
 }
@@ -147,12 +147,12 @@ export const loginUser = asyncHandler(async (req, res) => {
     const tokens = await generateAccessAndRefereshTokens(user._id);
 
     res
-    .status(200)
-    .cookie("accessToken", tokens.accessToken, cookieOptions)
-    .cookie("refreshToken", tokens.refreshToken, cookieOptions)
-    .json(
-        new ApiResponse(200, tokens, "Login successful")
-    );
+        .status(200)
+        .cookie("accessToken", tokens.accessToken, cookieOptions)
+        .cookie("refreshToken", tokens.refreshToken, cookieOptions)
+        .json(
+            new ApiResponse(200, user.DisplayName, "Login successful")
+        );
 
 });
 
@@ -173,15 +173,15 @@ export const googleLogin = asyncHandler(async (req, res) => {
     const tokens = await generateAccessAndRefereshTokens(user._id);
 
     res
-    .status(200)
-    .cookie("accessToken", tokens.accessToken, cookieOptions)
-    .cookie("refreshToken", tokens.refreshToken, cookieOptions)
-    .json(
-        new ApiResponse(200, tokens, "Login successful")
-    );
+        .status(200)
+        .cookie("accessToken", tokens.accessToken, cookieOptions)
+        .cookie("refreshToken", tokens.refreshToken, cookieOptions)
+        .json(
+            new ApiResponse(200, user.DisplayName, "Login successful")
+        );
 });
 
-export const logoutUser = asyncHandler(async(req, res) => {
+export const logoutUser = asyncHandler(async (req, res) => {
     await UserModel.findByIdAndUpdate(
         req.user._id,
         {
@@ -193,10 +193,10 @@ export const logoutUser = asyncHandler(async(req, res) => {
     )
 
     res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -211,31 +211,31 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
             incomingRefreshToken,
             config.refreshTokenSecret
         )
-    
+
         const user = await UserModel.findById(decodedToken?._id)
-    
+
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
-    
+
         if (incomingRefreshToken !== user?.RefreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
-            
+
         }
-    
+
         const tokens = await generateAccessAndRefereshTokens(user._id)
-    
+
         res
-        .status(200)
-        .cookie("accessToken", tokens.accessToken, options)
-        .cookie("refreshToken", tokens.refreshToken, options)
-        .json(
-            new ApiResponse(
-                200, 
-                tokens,
-                "Access token refreshed"
+            .status(200)
+            .cookie("accessToken", tokens.accessToken, options)
+            .cookie("refreshToken", tokens.refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    tokens,
+                    "Access token refreshed"
+                )
             )
-        )
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid refresh token")
     }

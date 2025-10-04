@@ -1,70 +1,102 @@
- 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaShareAlt, FaUserPlus, FaArrowRight, FaYoutube, FaTiktok, FaDiscord, FaTelegram, FaDribbble, FaBehance, FaMedium, FaPlus, FaTrash, FaSave, FaEye, FaTimes, FaCloudUploadAlt, FaImage, FaTimesCircle } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaYoutube, FaTiktok, FaDiscord, FaTelegram, FaDribbble, FaBehance, FaMedium, FaSave, FaTimes, FaCloudUploadAlt, FaBold, FaItalic, FaUnderline, FaListUl, FaListOl, FaLink, FaUnlink, FaTimesCircle } from 'react-icons/fa';
+import { useAlert } from "../../Alert";
 
-const Hero = ({ darkMode }) => {
-  // State for hero details (main table)
+const Hero = ({ darkMode, user }) => {
+  const defaultProfileImage = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80";
+  const defaultBackgroundImage = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
+
+  const apiurl = import.meta.env.VITE_API_URL;
+  const imageBaseUrl = import.meta.env.VITE_IMAGEBASE_URl;
+
   const [heroDetails, setHeroDetails] = useState({
-    profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-    backgroundImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    firstName: "Alex",
-    lastName: "Johnson",
+    ProfileImage: "",
+    BackgroundImage: "",
+    FirstName: "",
+    LastName: "",
     gradientFrom: "from-teal-300",
     gradientTo: "to-blue-300",
-    roles: "",
-    description: "I create exceptional digital experiences that blend creativity with functionality. With expertise in modern web technologies, I build responsive and user-friendly applications that solve real-world problems. Passionate about clean code, intuitive design, and continuous learning.",
-    availableForWork: "",
-    profileFile: null,
-    backgroundFile: null,
+    Roles: "",
+    Description: "",
+    Availability: "",
+    ProfileFile: null,
+    BackgroundFile: null,
   });
 
- // State for social links (separate table)
-  const [socialLinks, setSocialLinks] = useState([
-    { id: 1, icon: 'FaGithub', url: "https://github.com", color: "hover:text-white" },
-    { id: 2, icon: 'FaLinkedin', url: "https://linkedin.com", color: "hover:text-blue-300" },
-    { id: 3, icon: 'FaTwitter', url: "https://twitter.com", color: "hover:text-cyan-300" },
-    { id: 4, icon: 'FaInstagram', url: "https://instagram.com", color: "hover:text-pink-300" },
-    { id: 5, icon: 'FaFacebook', url: "https://facebook.com", color: "hover:text-blue-400" },
-    { id: 6, icon: 'FaYoutube', url: "https://youtube.com", color: "hover:text-red-400" },
-    { id: 7, icon: 'FaTiktok', url: "https://tiktok.com", color: "hover:text-pink-400" },
-    { id: 8, icon: 'FaDiscord', url: "https://discord.com", color: "hover:text-indigo-400" },
-    { id: 9, icon: 'FaTelegram', url: "https://telegram.com", color: "hover:text-blue-400" }
-  ]); 
-
-  // UI state
-  const [previewImage, setPreviewImage] = useState(null);
-  const [activeTab, setActiveTab] = useState('details'); // 'details' or 'social'
-  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
-  const [dragActive, setDragActive] = useState({ profile: false, background: false });
-  
-  const profileInputRef = useRef(null);
-  const backgroundInputRef = useRef(null);
+  const [socialLinks, setSocialLinks] = useState({
+    Github: "",
+    Linkedin: "",
+    Twitter: "",
+    Instagram: "",
+    Facebook: "",
+    Youtube: "",
+    Tiktok: "",
+    Discord: "",
+    Telegram: "",
+    Dribbble: "",
+    Behance: "",
+    Medium: "",
+    UserUniqueId: ""
+  });
 
   // Available icons for social links
   const iconOptions = [
-    { value: 'FaGithub', label: 'GitHub', icon: <FaGithub /> },
-    { value: 'FaLinkedin', label: 'LinkedIn', icon: <FaLinkedin /> },
-    { value: 'FaTwitter', label: 'Twitter', icon: <FaTwitter /> },
-    { value: 'FaInstagram', label: 'Instagram', icon: <FaInstagram /> },
-    { value: 'FaFacebook', label: 'Facebook', icon: <FaFacebook /> },
-    { value: 'FaYoutube', label: 'YouTube', icon: <FaYoutube /> },
-    { value: 'FaTiktok', label: 'TikTok', icon: <FaTiktok /> },
-    { value: 'FaDiscord', label: 'Discord', icon: <FaDiscord /> },
-    { value: 'FaTelegram', label: 'Telegram', icon: <FaTelegram /> },
-    { value: 'FaDribbble', label: 'Dribbble', icon: <FaDribbble /> },
-    { value: 'FaBehance', label: 'Behance', icon: <FaBehance /> },
-    { value: 'FaMedium', label: 'Medium', icon: <FaMedium /> }
+    { value: 'Github', label: 'GitHub', icon: <FaGithub /> },
+    { value: 'Linkedin', label: 'LinkedIn', icon: <FaLinkedin /> },
+    { value: 'Twitter', label: 'Twitter', icon: <FaTwitter /> },
+    { value: 'Instagram', label: 'Instagram', icon: <FaInstagram /> },
+    { value: 'Facebook', label: 'Facebook', icon: <FaFacebook /> },
+    { value: 'Youtube', label: 'YouTube', icon: <FaYoutube /> },
+    { value: 'Tiktok', label: 'TikTok', icon: <FaTiktok /> },
+    { value: 'Discord', label: 'Discord', icon: <FaDiscord /> },
+    { value: 'Telegram', label: 'Telegram', icon: <FaTelegram /> },
+    { value: 'Dribbble', label: 'Dribbble', icon: <FaDribbble /> },
+    { value: 'Behance', label: 'Behance', icon: <FaBehance /> },
+    { value: 'Medium', label: 'Medium', icon: <FaMedium /> }
   ];
 
   const availabilityOptions = [
     { value: "Available", label: "Available for work" },
     { value: "Not_Available", label: "Not available" },
-    { value: "Open_To_Offers", label: "Open to offers" },
+    { value: "Open_To_collaborations", label: "Open to collaborations" },
+    { value: "internships", label: "Open to internships" },
     { value: "Freelancing", label: "Available for freelance" },
     { value: "Looking", label: "Actively looking" },
     { value: "Busy", label: "Currently busy" },
+    { value: "Full_time_positions", label: "Full-time positions" },
+    { value: "Part_time_opportunities", label: "Part-time opportunities" },
+    { value: "Remote_work_only", label: "Remote work only" },
+    { value: "mentorship", label: "Looking for mentorship" },
   ];
+
+  // UI state
+  const [previewImage, setPreviewImage] = useState(null);
+  const [activeTab, setActiveTab] = useState('details'); // 'details' or 'social'
+  const [dragActive, setDragActive] = useState({ profile: false, background: false });
+  const [showUrlModal, setShowUrlModal] = useState(false);
+  const [urlInputValue, setUrlInputValue] = useState('');
+
+  const profileInputRef = useRef(null);
+  const backgroundInputRef = useRef(null);
+  const editorRef = useRef(null);
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    setHeroDetails(user);
+    setSocialLinks(user.SocialMedia);
+  }, [user]);
+
+  // Function to get the correct image source
+  const getImageSrc = (imagePath, defaultImage) => {
+    if (!imagePath) return defaultImage;
+    // Check if it's a data URL (starts with "data:")
+    if (imagePath.startsWith('data:')) {
+      return imagePath;
+    }
+    // Otherwise, it's a path from the database
+    return `${imageBaseUrl}${imagePath}`;
+  };
 
   // Handle hero detail changes
   const handleDetailChange = (field, value) => {
@@ -72,23 +104,13 @@ const Hero = ({ darkMode }) => {
   };
 
   // Handle social link changes
-  const handleSocialLinkChange = (id, field, value) => {
-    setSocialLinks(prev => 
-      prev.map(link => link.id === id ? { ...link, [field]: value } : link)
-    );
+  const handleSocialLinkChange = (platform, url) => {
+    setSocialLinks(prev => ({ ...prev, [platform]: url }));
   };
 
-  // Add new social link
-  const addSocialLink = () => {
-    const newId = Math.max(0, ...socialLinks.map(link => link.id)) + 1;
-    setSocialLinks(prev => [...prev, { id: newId, icon: 'FaGithub', url: "", color: "hover:text-white" }]);
-    showNotification('New social link added');
-  };
-
-  // Remove social link
-  const removeSocialLink = (id) => {
-    setSocialLinks(prev => prev.filter(link => link.id !== id));
-    showNotification('Social link removed', 'info');
+  // Clear social link input
+  const clearSocialLink = (platform) => {
+    setSocialLinks(prev => ({ ...prev, [platform]: "" }));
   };
 
   // Handle drag events
@@ -107,7 +129,7 @@ const Hero = ({ darkMode }) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(prev => ({ ...prev, [type]: false }));
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFile(e.dataTransfer.files[0], type);
     }
@@ -116,26 +138,25 @@ const Hero = ({ darkMode }) => {
   // Handle file selection
   const handleFile = (file, type) => {
     if (!file.type.match('image.*')) {
-      showNotification('Please select an image file', 'error');
+      showAlert('error', 'Please select an image file');
       return;
     }
-    
+
     const reader = new FileReader();
     reader.onloadend = () => {
       if (type === 'profile') {
-        setHeroDetails(prev => ({ 
-          ...prev, 
-          profileImage: reader.result, 
-          profileFile: file 
+        setHeroDetails(prev => ({
+          ...prev,
+          ProfileImage: reader.result,
+          ProfileFile: file
         }));
       } else {
-        setHeroDetails(prev => ({ 
-          ...prev, 
-          backgroundImage: reader.result, 
-          backgroundFile: file 
+        setHeroDetails(prev => ({
+          ...prev,
+          BackgroundImage: reader.result,
+          BackgroundFile: file
         }));
       }
-      showNotification(`${type === 'profile' ? 'Profile' : 'Background'} image updated`);
     };
     reader.readAsDataURL(file);
   };
@@ -156,48 +177,172 @@ const Hero = ({ darkMode }) => {
     }
   };
 
-  // Remove uploaded image
-  const removeImage = (type) => {
-    if (type === 'profile') {
-      setHeroDetails(prev => ({ 
-        ...prev, 
-        profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-        profileFile: null 
-      }));
-    } else {
-      setHeroDetails(prev => ({ 
-        ...prev, 
-        backgroundImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-        backgroundFile: null 
-      }));
-    }
-    showNotification(`${type === 'profile' ? 'Profile' : 'Background'} image removed`, 'info');
-  };
-
   // Handle availability change
   const handleAvailabilityChange = (e) => {
     const { value } = e.target;
-    setHeroDetails(prev => ({ ...prev, availableForWork: value }));
+    setHeroDetails(prev => ({ ...prev, Availability: value }));
+  };
+
+  // Text editor functions
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current.focus();
+  };
+
+  const handleEditorChange = () => {
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      setHeroDetails(prev => ({ ...prev, Description: content }));
+    }
+  };
+
+  const openUrlModal = () => {
+    setUrlInputValue('');
+    setShowUrlModal(true);
+  };
+
+  const handleUrlSubmit = () => {
+    if (urlInputValue) {
+      formatText('createLink', urlInputValue);
+      setShowUrlModal(false);
+    }
+  };
+
+  const handleUrlCancel = () => {
+    setShowUrlModal(false);
+  };
+
+  const removeLink = () => {
+    formatText('unlink');
   };
 
   // Save hero details
-  const saveHeroDetails = () => {
-    // In a real app, this would be an API call
-    console.log('Saving hero details:', heroDetails);
-    showNotification('Hero details saved successfully');
+  const saveHeroDetails = async (e) => {
+    e.preventDefault();
+    console.log("Saving hero details:", heroDetails);
+
+    try {
+      const updateUser = import.meta.env.VITE_UPDATEUSERDETAIL_API;
+      const formData = new FormData();
+
+      // Append text fields
+      formData.append("UserUniqueId", heroDetails.UserUniqueId);
+      formData.append("FirstName", heroDetails.FirstName);
+      formData.append("LastName", heroDetails.LastName);
+      formData.append("Roles", heroDetails.Roles);
+      formData.append("Description", heroDetails.Description);
+      formData.append("Availability", heroDetails.Availability);
+
+      // Append image files (check if file exists)
+      if (heroDetails.ProfileFile instanceof File) {
+        formData.append("ProfileFile", heroDetails.ProfileFile);
+      }
+
+      if (heroDetails.BackgroundFile instanceof File) {
+        formData.append("BackgroundFile", heroDetails.BackgroundFile);
+      }
+
+      const res = await fetch(`${apiurl}${updateUser}`, {
+        method: "PUT",
+        body: formData, // Don't set Content-Type! Browser will handle it.
+      });
+
+      const jsonResponse = await res.json().catch(() => ({
+        message: "We couldn't process the server response.",
+      }));
+
+      if (!res.ok) {
+        showAlert({
+          type: "error",
+          message:
+            jsonResponse.message ||
+            "An error occurred while updating your details. Please try again later.",
+        });
+        return;
+      }
+
+      showAlert({
+        type: "success",
+        message: "Your profile has been updated successfully.",
+      });
+
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      showAlert({
+        type: "error",
+        message: "A network error occurred. Please check your connection and try again.",
+      });
+    }
+  };
+
+  const validateSocialLinks = () => {
+    for (const [platform, inputUrl] of Object.entries(socialLinks)) {
+      if (!inputUrl || platform === "UserUniqueId" || platform === "updatedAt" || platform === "_id") continue;
+
+      if (
+        !inputUrl.includes("http://") &&
+        !inputUrl.includes("https://") &&
+        !inputUrl.includes("www.")
+      ) {
+        return {
+          valid: false,
+          message: `❌ "${platform}" link must contain http://, https:// or www.`,
+        };
+      }
+    }
+
+    return { valid: true };
   };
 
   // Save social links
-  const saveSocialLinks = () => {
-    // In a real app, this would be an API call
+  const saveSocialLinks = async (e) => {
+    e.preventDefault();
     console.log('Saving social links:', socialLinks);
-    showNotification('Social links saved successfully');
-  };
 
-  // Show notification
-  const showNotification = (message, type = 'success') => {
-    setNotification({ show: true, message, type });
-    setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
+    try {
+      const validation = validateSocialLinks();
+      if (!validation.valid) {
+        showAlert({ type: "error", message: validation.message });
+        return;
+      }
+
+      const payload = {
+        ...socialLinks,
+        UserUniqueId: user.UserUniqueId,
+      };
+
+      const updateSocialMedia = import.meta.env.VITE_UPDATESOCIALMEDIA_API;
+
+      const res = await fetch(`${apiurl}${updateSocialMedia}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const jsonResponse = await res.json().catch(() => ({
+        message: "Unable to parse server response.",
+      }));
+
+      if (!res.ok) {
+        showAlert({
+          type: "error",
+          message:
+            jsonResponse.message ||
+            "Failed to update social media links. Please check your connection or try again later.",
+        });
+        return;
+      }
+
+      showAlert({ type: "success", message: "Social Media Links Updated Successfully" });
+    } catch (error) {
+      console.error("Network or unexpected error:", error);
+      showAlert({
+        type: "error",
+        message: "A network error occurred. Please try again shortly.",
+      });
+    }
   };
 
   // Theme classes
@@ -219,17 +364,68 @@ const Hero = ({ darkMode }) => {
   const dragActiveClass = darkMode ? 'border-blue-500 bg-blue-900/30' : 'border-blue-400 bg-blue-100';
   const dragInactiveClass = darkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-300 bg-gray-100';
   const shadowClass = darkMode ? 'shadow-xl shadow-blue-900/20' : 'shadow-xl shadow-blue-200/30';
+  const editorToolbarClass = darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300';
+  const editorButtonClass = darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200';
+  const editorContentClass = darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800';
+  const urlInputClass = darkMode ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-800';
+  const clearButtonClass = darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600';
+  const modalBgClass = darkMode ? 'bg-gray-800/95' : 'bg-white/95';
+  const modalCardClass = darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
+  const modalButtonPrimaryClass = darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600';
+  const modalButtonSecondaryClass = darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300';
 
   return (
     <div className={`min-h-screen p-6 ${bgClass}`}>
-      {/* Notification */}
-      {notification.show && (
-        <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 flex items-center ${
-          notification.type === 'success' ? 'bg-green-500' : 
-          notification.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        } text-white animate-fadeIn`}>
-          <FaSave className="mr-2" />
-          {notification.message}
+
+      {/* URL Input Modal */}
+      {showUrlModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm" onClick={handleUrlCancel}>
+          <motion.div 
+            className={`relative max-w-md w-full mx-4 rounded-2xl overflow-hidden ${modalCardClass} border shadow-2xl`}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h3 className={`text-xl font-bold mb-4 ${textClass}`}>Add Link</h3>
+              <p className={`mb-4 ${textSecondaryClass}`}>Enter the URL you want to link to:</p>
+              
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={urlInputValue}
+                  onChange={(e) => setUrlInputValue(e.target.value)}
+                  placeholder="https://example.com"
+                  className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleUrlSubmit();
+                    } else if (e.key === 'Escape') {
+                      handleUrlCancel();
+                    }
+                  }}
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleUrlCancel}
+                  className={`px-4 py-2 rounded-lg font-medium ${modalButtonSecondaryClass} ${textClass} transition-colors duration-300`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUrlSubmit}
+                  className={`px-4 py-2 rounded-lg font-medium ${modalButtonPrimaryClass} text-white transition-colors duration-300`}
+                  disabled={!urlInputValue}
+                >
+                  Add Link
+                </button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       )}
 
@@ -263,17 +459,15 @@ const Hero = ({ darkMode }) => {
           {/* Tabs for different sections */}
           <div className="flex mb-8 border-b">
             <button
-              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${
-                activeTab === 'details' ? tabActiveClass : tabInactiveClass
-              }`}
+              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${activeTab === 'details' ? tabActiveClass : tabInactiveClass
+                }`}
               onClick={() => setActiveTab('details')}
             >
               Hero Details
             </button>
             <button
-              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${
-                activeTab === 'social' ? tabActiveClass : tabInactiveClass
-              }`}
+              className={`px-6 py-3 font-medium rounded-t-lg transition-all duration-300 ${activeTab === 'social' ? tabActiveClass : tabInactiveClass
+                }`}
               onClick={() => setActiveTab('social')}
             >
               Social Links
@@ -298,29 +492,22 @@ const Hero = ({ darkMode }) => {
                     className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Profile Image</h2>
-                    
+
                     <div className="flex flex-col items-center">
                       <div className="relative mb-4">
                         <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-teal-500 shadow-lg">
                           <img
-                            onClick={() => setPreviewImage(heroDetails.profileImage)}
-                            src={heroDetails.profileImage}
+                            onClick={() => setPreviewImage(getImageSrc(heroDetails.ProfileImage, defaultProfileImage))}
+                            src={getImageSrc(heroDetails.ProfileImage, defaultProfileImage)}
                             alt="Profile Preview"
                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                           />
                         </div>
-                        <button
-                          onClick={() => removeImage('profile')}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-300 shadow-lg"
-                        >
-                          <FaTimesCircle />
-                        </button>
                       </div>
-                      
-                      <div 
-                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
-                          dragActive.profile ? dragActiveClass : dragInactiveClass
-                        }`}
+
+                      <div
+                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${dragActive.profile ? dragActiveClass : dragInactiveClass
+                          }`}
                         onDragEnter={(e) => handleDrag(e, 'profile')}
                         onDragOver={(e) => handleDrag(e, 'profile')}
                         onDragLeave={(e) => handleDrag(e, 'profile')}
@@ -353,29 +540,22 @@ const Hero = ({ darkMode }) => {
                     className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Background Image</h2>
-                    
+
                     <div className="flex flex-col items-center">
                       <div className="relative mb-4 w-full">
                         <div className="w-full h-56 rounded-xl overflow-hidden border-4 border-teal-500 shadow-lg">
                           <img
-                            onClick={() => setPreviewImage(heroDetails.backgroundImage)}
-                            src={heroDetails.backgroundImage}
+                            onClick={() => setPreviewImage(getImageSrc(heroDetails.BackgroundImage, defaultBackgroundImage))}
+                            src={getImageSrc(heroDetails.BackgroundImage, defaultBackgroundImage)}
                             alt="Background Preview"
                             className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                           />
                         </div>
-                        <button
-                          onClick={() => removeImage('background')}
-                          className="absolute top-3 right-3 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors duration-300 shadow-lg"
-                        >
-                          <FaTimesCircle />
-                        </button>
                       </div>
-                      
-                      <div 
-                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${
-                          dragActive.background ? dragActiveClass : dragInactiveClass
-                        }`}
+
+                      <div
+                        className={`w-full p-6 border-2 border-dashed rounded-xl text-center cursor-pointer transition-all duration-300 ${dragActive.background ? dragActiveClass : dragInactiveClass
+                          }`}
                         onDragEnter={(e) => handleDrag(e, 'background')}
                         onDragOver={(e) => handleDrag(e, 'background')}
                         onDragLeave={(e) => handleDrag(e, 'background')}
@@ -417,8 +597,9 @@ const Hero = ({ darkMode }) => {
                         <label className={`block text-sm font-medium mb-1 ${labelClass}`}>First Name</label>
                         <input
                           type="text"
-                          value={heroDetails.firstName}
-                          onChange={(e) => handleDetailChange('firstName', e.target.value)}
+                          placeholder='e.g. John'
+                          value={heroDetails.FirstName}
+                          onChange={(e) => handleDetailChange('FirstName', e.target.value)}
                           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                         />
                       </div>
@@ -427,8 +608,9 @@ const Hero = ({ darkMode }) => {
                         <label className={`block text-sm font-medium mb-1 ${labelClass}`}>Last Name</label>
                         <input
                           type="text"
-                          value={heroDetails.lastName}
-                          onChange={(e) => handleDetailChange('lastName', e.target.value)}
+                          placeholder='e.g. Doe'
+                          value={heroDetails.LastName}
+                          onChange={(e) => handleDetailChange('LastName', e.target.value)}
                           className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                         />
                       </div>
@@ -445,7 +627,7 @@ const Hero = ({ darkMode }) => {
                             type="radio"
                             name="availability"
                             value={item.value}
-                            checked={heroDetails.availableForWork === item.value}
+                            checked={heroDetails.Availability === item.value}
                             onChange={handleAvailabilityChange}
                             className="cursor-pointer w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                           />
@@ -465,8 +647,8 @@ const Hero = ({ darkMode }) => {
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Roles (Typewriter)</h2>
                     <input
                       type="text"
-                      value={heroDetails.roles}
-                      onChange={(e) => handleDetailChange("roles", e.target.value)}
+                      value={heroDetails.Roles}
+                      onChange={(e) => handleDetailChange("Roles", e.target.value)}
                       placeholder="e.g. Developer, Designer, Creator"
                       className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                     />
@@ -475,7 +657,7 @@ const Hero = ({ darkMode }) => {
                     </p>
                   </motion.div>
 
-                  {/* Description */}
+                  {/* Description with Text Editor */}
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -483,13 +665,81 @@ const Hero = ({ darkMode }) => {
                     className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Description</h2>
-                    <textarea
-                      value={heroDetails.description}
-                      onChange={(e) => handleDetailChange('description', e.target.value)}
-                      rows={5}
+                    
+                    {/* Text Editor Toolbar */}
+                    <div className={`flex flex-wrap gap-2 p-3 rounded-t-lg border-b ${editorToolbarClass}`}>
+                      <button
+                        type="button"
+                        onClick={() => formatText('bold')}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Bold"
+                      >
+                        <FaBold />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => formatText('italic')}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Italic"
+                      >
+                        <FaItalic />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => formatText('underline')}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Underline"
+                      >
+                        <FaUnderline />
+                      </button>
+                      <div className="w-px h-6 bg-gray-400 mx-1"></div>
+                      <button
+                        type="button"
+                        onClick={() => formatText('insertUnorderedList')}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Bullet List"
+                      >
+                        <FaListUl />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => formatText('insertOrderedList')}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Numbered List"
+                      >
+                        <FaListOl />
+                      </button>
+                      <div className="w-px h-6 bg-gray-400 mx-1"></div>
+                      <button
+                        type="button"
+                        onClick={openUrlModal}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Add Link"
+                      >
+                        <FaLink />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={removeLink}
+                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
+                        title="Remove Link"
+                      >
+                        <FaUnlink />
+                      </button>
+                    </div>
+                    
+                    {/* Text Editor Content */}
+                    <div
+                      ref={editorRef}
+                      contentEditable
+                      onInput={handleEditorChange}
+                      dangerouslySetInnerHTML={{ __html: heroDetails.Description }}
+                      className={`min-h-[150px] p-4 rounded-b-lg border ${inputBorderClass} ${editorContentClass} focus:outline-none focus:ring-2 ${inputFocusClass} transition-all duration-300`}
                       placeholder="Write a brief description about yourself..."
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                     />
+                    <p className={`text-sm mt-2 ${textSecondaryClass}`}>
+                      Use the toolbar to format your text
+                    </p>
                   </motion.div>
                 </div>
               </div>
@@ -520,88 +770,41 @@ const Hero = ({ darkMode }) => {
               transition={{ duration: 0.3 }}
             >
               <div className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className={`text-xl font-semibold ${textClass}`}>Social Links</h2>
-                  <button
-                    onClick={addSocialLink}
-                    className={`flex items-center px-5 py-3 rounded-xl transition-all duration-300 ${buttonBgClass} text-white font-medium hover:shadow-lg transform hover:-translate-y-1`}
-                  >
-                    <FaPlus className="mr-2" />
-                    Add Link
-                  </button>
-                </div>
+                <h2 className={`text-xl font-semibold mb-6 ${textClass}`}>Social Links</h2>
 
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-700">
-                    <thead>
-                      <tr>
-                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Platform</th>
-                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>URL</th>
-                        <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${textClass}`}>Preview</th>
-                        <th className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${textClass}`}>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700">
-                      {socialLinks.map((link) => (
-                        <tr key={link.id} className="hover:bg-gray-200/10 transition-colors duration-300">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <select
-                              value={link.icon}
-                              onChange={(e) => handleSocialLinkChange(link.id, 'icon', e.target.value)}
-                              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                            >
-                              {iconOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className="px-6 py-4">
-                            <input
-                              type="text"
-                              value={link.url}
-                              onChange={(e) => handleSocialLinkChange(link.id, 'url', e.target.value)}
-                              placeholder="https://example.com"
-                              className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                            />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${iconBgClass} shadow-md`}>
-                                {iconOptions.find(opt => opt.value === link.icon)?.icon || <FaGithub />}
-                              </div>
-                              <span className={`ml-3 text-sm ${textClass}`}>
-                                {iconOptions.find(opt => opt.value === link.icon)?.label || 'GitHub'}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {iconOptions.map((platform) => (
+                    <div key={platform.value} className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconBgClass} shadow-md`}>
+                        {platform.icon}
+                      </div>
+                      <div className="flex-1">
+                        <label className={`block text-sm font-medium mb-1 ${labelClass}`}>
+                          {platform.label}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={socialLinks[platform.value]}
+                            onChange={(e) => handleSocialLinkChange(platform.value, e.target.value)}
+                            placeholder={`https://${platform.label.toLowerCase()}.com/username`}
+                            className={`w-full px-4 py-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300 ${urlInputClass}`}
+                          />
+                          {socialLinks[platform.value] && (
                             <button
-                              onClick={() => removeSocialLink(link.id)}
-                              className={`p-3 rounded-xl ${redTextClass} hover:bg-red-500/10 transition-all duration-300`}
+                              type="button"
+                              onClick={() => clearSocialLink(platform.value)}
+                              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full ${clearButtonClass} transition-colors duration-200`}
+                              aria-label="Clear input"
                             >
-                              <FaTrash />
+                              <FaTimesCircle />
                             </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-
-                {socialLinks.length === 0 && (
-                  <div className="text-center py-12">
-                    <p className={`${textSecondaryClass} text-lg`}>No social links added yet</p>
-                    <button
-                      onClick={addSocialLink}
-                      className={`mt-6 flex items-center justify-center px-6 py-3 rounded-xl transition-all duration-300 ${buttonBgClass} text-white font-medium hover:shadow-lg transform hover:-translate-y-1 mx-auto`}
-                    >
-                      <FaPlus className="mr-2" />
-                      Add Your First Link
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Save Button for Social Links */}
@@ -623,7 +826,7 @@ const Hero = ({ darkMode }) => {
           )}
         </div>
       </div>
-      
+
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -638,6 +841,14 @@ const Hero = ({ darkMode }) => {
         }
         .animate-zoomIn {
           animation: zoomIn 0.3s ease-out forwards;
+        }
+        [contenteditable]:empty:before {
+          content: attr(placeholder);
+          color: ${darkMode ? '#9CA3AF' : '#6B7280'};
+          pointer-events: none;
+        }
+        [contenteditable] {
+          outline: none;
         }
       `}</style>
     </div>

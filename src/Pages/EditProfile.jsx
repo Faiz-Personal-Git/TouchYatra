@@ -5,16 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaUser, FaInfoCircle, FaBriefcase, FaGraduationCap, FaCode, FaProjectDiagram,
   FaCertificate, FaComments, FaBlog, FaYoutube, FaVideo, FaHeartbeat,
-  FaPhoneAlt, FaFileAlt, FaCalendarAlt, FaChartBar, FaQrcode, FaEnvelope,
+  FaPhoneAlt, FaFileAlt, FaChartBar, FaQrcode,
   FaCog, FaSave, FaSignOutAlt, FaMoon, FaSun, FaBars, FaTimes, FaArrowRight,
-  FaEye, FaEdit, FaPlus, FaSearch, FaBell, FaUserCircle, FaChevronDown, FaChevronUp,
-  FaThLarge, FaList, FaTachometerAlt, FaPalette, FaLock, FaDatabase, FaMountain,
-  FaLeaf, FaTree, FaWater, FaStar, FaFire, FaBolt, FaGem, FaSnowflake, FaFeather,
+  FaEye, FaEdit, FaPlus, FaSearch, FaChevronDown,
+  FaThLarge, FaList, FaTachometerAlt, FaPalette, FaMountain,
+  FaLeaf, FaTree, FaGem, FaFeather,
   FaDragon, FaKiwiBird, FaHorse, FaFish, FaSpider, FaBug, FaCat, FaDog, FaCrow,
-  FaIdCard, FaImages, FaImage, FaUsers, FaMoneyBill, FaMusic, FaFileSignature, FaUserMd,
-  FaRocket, FaChartLine, FaLightbulb, FaTrophy, FaClock, FaGlobe, FaHeart, FaMedal,
+  FaImages, FaUsers, FaMusic,
+  FaRocket, FaChartLine, FaTrophy, FaGlobe, FaHeart, FaMedal,
   FaGlobe as FaGlobeAlt
 } from 'react-icons/fa';
+import { useAlert } from "../Components/Alert"
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { Hero, About, Experience, Education, Skills, Gallery, Projects, Certifications, Testimonials, MyTeam, Blog, YouTube, Videos, Medical, EmergencyContact, Documents, ProfileAnalytics, PaymentQR, Family, Playlist } from "../Components/Profile/EditIndex";
 
@@ -27,6 +29,7 @@ const EditProfile = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [headerSearch, setHeaderSearch] = useState('');
+  const [user, setUser] = useState({});  
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedMode = localStorage.getItem('darkMode');
@@ -38,7 +41,65 @@ const EditProfile = () => {
     return false;
   });
 
+  const { DisplayName } = useParams();
   const containerRef = useRef(null);
+  const { showAlert } = useAlert();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!DisplayName) {
+        showAlert({
+          type: "error",
+          message: "No display name provided. Cannot load user details.",
+        });
+        navigate("/SignIn");
+        return;
+      }
+
+      try {
+        
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const userDetail = import.meta.env.VITE_USERDETAIL_API;
+
+        const response = await fetch(`${apiUrl}${userDetail}/${DisplayName}`);
+
+        const jsonResponse = await response.json().catch(() => ({
+          message: "Unable to parse server response.",
+        }));
+
+        if (!response.ok) {
+          showAlert({
+            type: "error",
+            message:
+              jsonResponse.message ||
+              "Failed to load user details. Please check your connection or try again later.",
+          });
+          navigate("/SignIn");
+          return;
+        }
+
+        showAlert({
+          type: "success",
+          message:
+            jsonResponse.message ||
+            `Welcome back, ${DisplayName}! Your profile has been loaded successfully.`,
+        });
+
+        setUser(jsonResponse.Data);
+
+      } catch (error) {
+        console.error("Network or unexpected error:", error);
+        showAlert({
+          type: "error",
+          message: "A network error occurred. Please try again shortly.",
+        });
+        navigate("/SignIn");
+      }
+    };
+
+    fetchUserDetails();
+  }, [DisplayName]);
 
   // Apply dark mode class to document element
   useEffect(() => {
@@ -273,15 +334,6 @@ const EditProfile = () => {
       color: 'from-indigo-400 to-purple-500',
       accent: 'indigo',
       natureIcon: <FaMusic />
-    },
-    {
-      id: 'language',
-      name: 'Language',
-      icon: <FaGlobe />,
-      description: 'Change interface language',
-      color: 'from-indigo-400 to-blue-500',
-      accent: 'indigo',
-      natureIcon: <FaGlobeAlt />
     }
   ];
 
@@ -661,7 +713,7 @@ const EditProfile = () => {
           </div>
         );
       case 'hero':
-        return <Hero darkMode={darkMode} />;
+        return <Hero darkMode={darkMode} user={user} />;
       case 'about':
         return <About darkMode={darkMode} />;
       case 'experience':
@@ -1034,23 +1086,6 @@ const EditProfile = () => {
           </div>
         </footer>
       </div>
-
-      {/* Save Success Notification */}
-      <AnimatePresence>
-        {saveSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 right-6 z-50 px-6 py-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-white rounded-xl shadow-lg"
-          >
-            <div className="flex items-center">
-              <FaSave className="mr-3" />
-              <span>Changes saved successfully!</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

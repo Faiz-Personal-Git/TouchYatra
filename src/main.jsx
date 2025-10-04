@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/SignIn' element={<SignIn />} />
         <Route path='/SignUp' element={<SignUp />} />
         <Route path='/Profile' element={<Profile />} />
-        <Route path='/Edit' element={<EditProfile />} />
+        <Route path='/Edit/:DisplayName' element={<EditProfile />} />
       </Routes>
     </BrowserRouter>
   </AlertProvider>

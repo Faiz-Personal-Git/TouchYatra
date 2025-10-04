@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { EnvelopeIcon, LockClosedIcon, EyeSlashIcon, EyeIcon } from "@heroicons/react/24/solid";
 import { useAlert } from "../Components/Alert";
 import { Link, useNavigate } from "react-router-dom"
-import { auth, googleProvider, facebookProvider, signInWithPopup } from "../lib/Firebase";
+import { auth, googleProvider, signInWithPopup } from "../lib/Firebase";
 
 const SignIn = () => {
 
@@ -49,7 +49,7 @@ const SignIn = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      debugger
+
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
 
@@ -82,10 +82,10 @@ const SignIn = () => {
         showAlert({ type: "error", message: jsonResponse.message || "Something went wrong" });
         return;
       }
-
+      debugger
       showAlert({ type: "success", message: jsonResponse.message || "Login successful!" });
 
-      navigate("/Edit");
+      navigate(`/Edit/${jsonResponse.Data}`);
     } catch (error) {
       console.error("Google Login Error:", error);
       showAlert({ type: "error", message: error.message });
@@ -122,7 +122,7 @@ const SignIn = () => {
 
       showAlert({ type: "success", message: jsonResponse.Message || "Login successful!" });
 
-      navigate("/Edit");
+      navigate(`/Edit/${jsonResponse.Data}`);
     } catch (err) {
       console.error("Network or unexpected error:", err);
       showAlert({ type: "error", message: "Something went wrong. Please try again later." });

@@ -30,7 +30,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
 export const registerUser = asyncHandler(async (req, res) => {
 
-    const { FirstName, LastName, DisplayName, Email, Password, IsEmailVerified } = req.body;
+    const { FirstName, LastName, DisplayName, Email, Password, IsEmailVerified, Phone } = req.body;
 
     const UserUniqueId = `${"USR"}${Math.floor(Date.now() / 1000)}`
 
@@ -79,7 +79,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         Email,
         Password,
         IsEmailVerified,
-        UserUniqueId
+        UserUniqueId, Phone
     });
 
     newUser.EmailVerificationToken = newUser.generateEmailVerificationToken();
@@ -182,22 +182,27 @@ export const googleLogin = asyncHandler(async (req, res) => {
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      throw new ApiError(401, "Unauthorized: User not logged in");
+    }
+
     await UserModel.findByIdAndUpdate(
-        req.user._id,
-        {
-            $unset: {
-                RefreshToken: 1 // this removes the field from document
-            }
-        },
-        { new: true }
-    )
+      req.user._id,
+      { $unset: { RefreshToken: 1 } },
+      { new: true }
+    );
 
     res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "User logged Out"))
-})
+      .status(200)
+      .clearCookie("accessToken", cookieOptions)
+      .clearCookie("refreshToken", cookieOptions)
+      .json(new ApiResponse(200, {}, "User logged out successfully"));
+  } catch (err) {
+    console.error("Logout error:", err);
+    throw new ApiError(500, "Logout failed. Internal server error");
+  }
+});
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.headers['X-Authorization-Refresh'] || req.body.refreshToken

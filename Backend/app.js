@@ -16,7 +16,12 @@ const __dirname = path.dirname(__filename);
 
 //#region basic app Middelware
 app.use(express.json({limit: "16kb"}));
-app.use(cors({origin: "*", credentials: true}));
+//app.use(cors({origin: "*", credentials: true}));
+app.use(cors({
+  origin: "http://localhost:5173", 
+  credentials: true
+}));
+
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static(path.join(__dirname, './public')));
 app.use(cookieParser());

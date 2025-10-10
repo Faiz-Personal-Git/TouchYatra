@@ -1,11 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaYoutube, FaTiktok, FaDiscord, FaTelegram, FaDribbble, FaBehance, FaMedium, FaSave, FaTimes, FaCloudUploadAlt, FaBold, FaItalic, FaUnderline, FaListUl, FaListOl, FaLink, FaUnlink, FaTimesCircle } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaFacebook, FaYoutube, FaTiktok, FaDiscord, FaTelegram, FaDribbble, FaBehance, FaMedium, FaSave, FaTimes,FaTimesCircle, FaCloudUploadAlt, FaUser, FaUserTie, FaInfoCircle } from 'react-icons/fa';
 import { useAlert } from "../../Alert";
+import { setRefresh } from "../../../States/Slice/LoadingSlice";
+import { useDispatch } from "react-redux";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const Hero = ({ darkMode, user }) => {
   const defaultProfileImage = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80";
   const defaultBackgroundImage = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
+
+  const dispatch = useDispatch();
 
   const apiurl = import.meta.env.VITE_API_URL;
   const imageBaseUrl = import.meta.env.VITE_IMAGEBASE_URl;
@@ -24,7 +30,7 @@ const Hero = ({ darkMode, user }) => {
     BackgroundFile: null,
   });
 
-  const [socialLinks, setSocialLinks] = useState({
+  const socialObj = {
     Github: "",
     Linkedin: "",
     Twitter: "",
@@ -38,7 +44,8 @@ const Hero = ({ darkMode, user }) => {
     Behance: "",
     Medium: "",
     UserUniqueId: ""
-  });
+  };
+  const [socialLinks, setSocialLinks] = useState(socialObj);
 
   // Available icons for social links
   const iconOptions = [
@@ -63,28 +70,27 @@ const Hero = ({ darkMode, user }) => {
     { value: "internships", label: "Open to internships" },
     { value: "Freelancing", label: "Available for freelance" },
     { value: "Looking", label: "Actively looking" },
-    { value: "Busy", label: "Currently busy" },
+    { value: "Busy", label: "Currently engaged or not taking new work" },
     { value: "Full_time_positions", label: "Full-time positions" },
     { value: "Part_time_opportunities", label: "Part-time opportunities" },
     { value: "Remote_work_only", label: "Remote work only" },
     { value: "mentorship", label: "Looking for mentorship" },
+    { value: "dont_disturb", label: "Prefers not to be contacted at the moment" },
+    { value: "away", label: "Away for personal time or travel." },
   ];
 
   // UI state
   const [previewImage, setPreviewImage] = useState(null);
-  const [activeTab, setActiveTab] = useState('details'); // 'details' or 'social'
+  const [activeTab, setActiveTab] = useState('details');
   const [dragActive, setDragActive] = useState({ profile: false, background: false });
-  const [showUrlModal, setShowUrlModal] = useState(false);
-  const [urlInputValue, setUrlInputValue] = useState('');
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);
-  const editorRef = useRef(null);
   const { showAlert } = useAlert();
 
   useEffect(() => {
     setHeroDetails(user);
-    setSocialLinks(user.SocialMedia);
+    setSocialLinks(user.SocialMedia || socialObj);
   }, [user]);
 
   // Function to get the correct image source
@@ -183,39 +189,6 @@ const Hero = ({ darkMode, user }) => {
     setHeroDetails(prev => ({ ...prev, Availability: value }));
   };
 
-  // Text editor functions
-  const formatText = (command, value = null) => {
-    document.execCommand(command, false, value);
-    editorRef.current.focus();
-  };
-
-  const handleEditorChange = () => {
-    if (editorRef.current) {
-      const content = editorRef.current.innerHTML;
-      setHeroDetails(prev => ({ ...prev, Description: content }));
-    }
-  };
-
-  const openUrlModal = () => {
-    setUrlInputValue('');
-    setShowUrlModal(true);
-  };
-
-  const handleUrlSubmit = () => {
-    if (urlInputValue) {
-      formatText('createLink', urlInputValue);
-      setShowUrlModal(false);
-    }
-  };
-
-  const handleUrlCancel = () => {
-    setShowUrlModal(false);
-  };
-
-  const removeLink = () => {
-    formatText('unlink');
-  };
-
   // Save hero details
   const saveHeroDetails = async (e) => {
     e.preventDefault();
@@ -225,7 +198,6 @@ const Hero = ({ darkMode, user }) => {
       const updateUser = import.meta.env.VITE_UPDATEUSERDETAIL_API;
       const formData = new FormData();
 
-      // Append text fields
       formData.append("UserUniqueId", heroDetails.UserUniqueId);
       formData.append("FirstName", heroDetails.FirstName);
       formData.append("LastName", heroDetails.LastName);
@@ -244,7 +216,7 @@ const Hero = ({ darkMode, user }) => {
 
       const res = await fetch(`${apiurl}${updateUser}`, {
         method: "PUT",
-        body: formData, // Don't set Content-Type! Browser will handle it.
+        body: formData,
       });
 
       const jsonResponse = await res.json().catch(() => ({
@@ -273,11 +245,14 @@ const Hero = ({ darkMode, user }) => {
         message: "A network error occurred. Please check your connection and try again.",
       });
     }
+    finally {
+      dispatch(setRefresh());
+    }
   };
 
   const validateSocialLinks = () => {
     for (const [platform, inputUrl] of Object.entries(socialLinks)) {
-      if (!inputUrl || platform === "UserUniqueId" || platform === "updatedAt" || platform === "_id") continue;
+      if (!inputUrl || platform === "UserUniqueId" || platform === "updatedAt" ||platform === "createdAt" || platform === "_id") continue;
 
       if (
         !inputUrl.includes("http://") &&
@@ -286,7 +261,7 @@ const Hero = ({ darkMode, user }) => {
       ) {
         return {
           valid: false,
-          message: `❌ "${platform}" link must contain http://, https:// or www.`,
+          message: `"${platform}" link must contain http://, https:// or www.`,
         };
       }
     }
@@ -296,6 +271,7 @@ const Hero = ({ darkMode, user }) => {
 
   // Save social links
   const saveSocialLinks = async (e) => {
+
     e.preventDefault();
     console.log('Saving social links:', socialLinks);
 
@@ -364,70 +340,11 @@ const Hero = ({ darkMode, user }) => {
   const dragActiveClass = darkMode ? 'border-blue-500 bg-blue-900/30' : 'border-blue-400 bg-blue-100';
   const dragInactiveClass = darkMode ? 'border-gray-600 bg-gray-700/30' : 'border-gray-300 bg-gray-100';
   const shadowClass = darkMode ? 'shadow-xl shadow-blue-900/20' : 'shadow-xl shadow-blue-200/30';
-  const editorToolbarClass = darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-gray-300';
-  const editorButtonClass = darkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200';
   const editorContentClass = darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800';
-  const urlInputClass = darkMode ? 'bg-gray-700 text-gray-100' : 'bg-white text-gray-800';
   const clearButtonClass = darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600';
-  const modalBgClass = darkMode ? 'bg-gray-800/95' : 'bg-white/95';
-  const modalCardClass = darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
-  const modalButtonPrimaryClass = darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600';
-  const modalButtonSecondaryClass = darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300';
 
   return (
     <div className={`min-h-screen p-6 ${bgClass}`}>
-
-      {/* URL Input Modal */}
-      {showUrlModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm" onClick={handleUrlCancel}>
-          <motion.div 
-            className={`relative max-w-md w-full mx-4 rounded-2xl overflow-hidden ${modalCardClass} border shadow-2xl`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6">
-              <h3 className={`text-xl font-bold mb-4 ${textClass}`}>Add Link</h3>
-              <p className={`mb-4 ${textSecondaryClass}`}>Enter the URL you want to link to:</p>
-              
-              <div className="mb-6">
-                <input
-                  type="text"
-                  value={urlInputValue}
-                  onChange={(e) => setUrlInputValue(e.target.value)}
-                  placeholder="https://example.com"
-                  className={`w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleUrlSubmit();
-                    } else if (e.key === 'Escape') {
-                      handleUrlCancel();
-                    }
-                  }}
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={handleUrlCancel}
-                  className={`px-4 py-2 rounded-lg font-medium ${modalButtonSecondaryClass} ${textClass} transition-colors duration-300`}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUrlSubmit}
-                  className={`px-4 py-2 rounded-lg font-medium ${modalButtonPrimaryClass} text-white transition-colors duration-300`}
-                  disabled={!urlInputValue}
-                >
-                  Add Link
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
 
       {/* Image Preview Modal */}
       {previewImage && (
@@ -595,24 +512,30 @@ const Hero = ({ darkMode, user }) => {
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${labelClass}`}>First Name</label>
-                        <input
-                          type="text"
-                          placeholder='e.g. John'
-                          value={heroDetails.FirstName}
-                          onChange={(e) => handleDetailChange('FirstName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                        />
+                        <div className="relative">
+                          <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder='e.g. John'
+                            value={heroDetails.FirstName}
+                            onChange={(e) => handleDetailChange('FirstName', e.target.value)}
+                            className={`w-full px-4 py-3 pl-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
+                          />
+                        </div>
                       </div>
 
                       <div>
                         <label className={`block text-sm font-medium mb-1 ${labelClass}`}>Last Name</label>
-                        <input
-                          type="text"
-                          placeholder='e.g. Doe'
-                          value={heroDetails.LastName}
-                          onChange={(e) => handleDetailChange('LastName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                        />
+                        <div className="relative">
+                          <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder='e.g. Doe'
+                            value={heroDetails.LastName}
+                            onChange={(e) => handleDetailChange('LastName', e.target.value)}
+                            className={`w-full px-4 py-3 pl-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
+                          />
+                        </div>
                       </div>
                     </div>
 
@@ -645,103 +568,79 @@ const Hero = ({ darkMode, user }) => {
                     className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
                   >
                     <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Roles (Typewriter)</h2>
-                    <input
-                      type="text"
-                      value={heroDetails.Roles}
-                      onChange={(e) => handleDetailChange("Roles", e.target.value)}
-                      placeholder="e.g. Developer, Designer, Creator"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
-                    />
-                    <p className={`text-sm mt-2 ${textSecondaryClass}`}>
-                      Separate multiple roles with commas
-                    </p>
-                  </motion.div>
-
-                  {/* Description with Text Editor */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
-                  >
-                    <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Description</h2>
-                    
-                    {/* Text Editor Toolbar */}
-                    <div className={`flex flex-wrap gap-2 p-3 rounded-t-lg border-b ${editorToolbarClass}`}>
-                      <button
-                        type="button"
-                        onClick={() => formatText('bold')}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Bold"
-                      >
-                        <FaBold />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => formatText('italic')}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Italic"
-                      >
-                        <FaItalic />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => formatText('underline')}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Underline"
-                      >
-                        <FaUnderline />
-                      </button>
-                      <div className="w-px h-6 bg-gray-400 mx-1"></div>
-                      <button
-                        type="button"
-                        onClick={() => formatText('insertUnorderedList')}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Bullet List"
-                      >
-                        <FaListUl />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => formatText('insertOrderedList')}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Numbered List"
-                      >
-                        <FaListOl />
-                      </button>
-                      <div className="w-px h-6 bg-gray-400 mx-1"></div>
-                      <button
-                        type="button"
-                        onClick={openUrlModal}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Add Link"
-                      >
-                        <FaLink />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={removeLink}
-                        className={`p-2 rounded ${editorButtonClass} transition-colors duration-200`}
-                        title="Remove Link"
-                      >
-                        <FaUnlink />
-                      </button>
+                    <div className="relative">
+                      <FaUserTie className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        value={heroDetails.Roles}
+                        onChange={(e) => handleDetailChange("Roles", e.target.value)}
+                        placeholder="e.g. Developer, Designer, Creator"
+                        className={`w-full px-4 py-3 pl-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
+                      />
                     </div>
-                    
-                    {/* Text Editor Content */}
-                    <div
-                      ref={editorRef}
-                      contentEditable
-                      onInput={handleEditorChange}
-                      dangerouslySetInnerHTML={{ __html: heroDetails.Description }}
-                      className={`min-h-[150px] p-4 rounded-b-lg border ${inputBorderClass} ${editorContentClass} focus:outline-none focus:ring-2 ${inputFocusClass} transition-all duration-300`}
-                      placeholder="Write a brief description about yourself..."
-                    />
-                    <p className={`text-sm mt-2 ${textSecondaryClass}`}>
-                      Use the toolbar to format your text
-                    </p>
                   </motion.div>
                 </div>
+              </div>
+
+              <div className="space-y-8 mt-7">
+                {/* Description with CKEditor */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className={`p-6 rounded-2xl ${cardBgClass} border ${borderClass} shadow-lg`}
+                >
+                  <h2 className={`text-xl font-semibold mb-4 ${textClass}`}>Description</h2>
+                  
+                  <div className={`border rounded-lg ${inputBorderClass} overflow-hidden`}>
+                    <CKEditor
+                      editor={ClassicEditor}
+                      data={heroDetails.Description}
+                      onChange={(event, editor) => {
+                        const data = editor.getData();
+                        setHeroDetails(prev => ({ ...prev, Description: data }));
+                      }}
+                      config={{
+                        toolbar: [
+                          'heading', '|',
+                          'bold', 'italic', 'underline', '|',
+                          'link', '|',
+                          'bulletedList', 'numberedList', '|',
+                          'blockQuote', 'insertTable', '|',
+                          'undo', 'redo'
+                        ],
+                        placeholder: 'Write a brief description about yourself...',
+                        // Dark mode configuration
+                        ui: {
+                          viewportOffset: {
+                            top: 50
+                          }
+                        }
+                      }}
+                      onReady={editor => {
+                        // Apply dark mode styles to CKEditor
+                        if (darkMode) {
+                          const editableElement = editor.ui.getEditableElement();
+                          if (editableElement) {
+                            editableElement.style.backgroundColor = '#1f2937';
+                            editableElement.style.color = '#f3f4f6';
+                          }
+                          
+                          // Style toolbar
+                          const toolbarElement = editor.ui.view.toolbar.element;
+                          if (toolbarElement) {
+                            toolbarElement.style.backgroundColor = '#374151';
+                            toolbarElement.style.borderColor = '#4b5563';
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                  
+                  <p className={`text-sm mt-2 ${textSecondaryClass}`}>
+                    Use the editor toolbar to format your text
+                  </p>
+                </motion.div>
               </div>
 
               {/* Save Button for Details */}
@@ -788,7 +687,7 @@ const Hero = ({ darkMode, user }) => {
                             value={socialLinks[platform.value]}
                             onChange={(e) => handleSocialLinkChange(platform.value, e.target.value)}
                             placeholder={`https://${platform.label.toLowerCase()}.com/username`}
-                            className={`w-full px-4 py-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300 ${urlInputClass}`}
+                            className={`w-full px-4 py-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 ${inputBgClass} ${inputBorderClass} ${inputFocusClass} ${textClass} transition-all duration-300`}
                           />
                           {socialLinks[platform.value] && (
                             <button
@@ -827,6 +726,7 @@ const Hero = ({ darkMode, user }) => {
         </div>
       </div>
 
+      {/* CKEditor Styles */}
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -842,13 +742,42 @@ const Hero = ({ darkMode, user }) => {
         .animate-zoomIn {
           animation: zoomIn 0.3s ease-out forwards;
         }
-        [contenteditable]:empty:before {
-          content: attr(placeholder);
-          color: ${darkMode ? '#9CA3AF' : '#6B7280'};
-          pointer-events: none;
+        
+        /* CKEditor Styles */
+        .ck-editor__editable {
+          min-height: 150px;
+          background-color: ${darkMode ? '#1f2937' : '#ffffff'} !important;
+          color: ${darkMode ? '#f3f4f6' : '#1f2937'} !important;
         }
-        [contenteditable] {
-          outline: none;
+        
+        .ck-toolbar {
+          background-color: ${darkMode ? '#374151' : '#f3f4f6'} !important;
+          border-color: ${darkMode ? '#4b5563' : '#d1d5db'} !important;
+        }
+        
+        .ck-toolbar .ck-button {
+          color: ${darkMode ? '#f3f4f6' : '#1f2937'} !important;
+        }
+        
+        .ck-toolbar .ck-button:hover {
+          background-color: ${darkMode ? '#4b5563' : '#e5e7eb'} !important;
+        }
+        
+        .ck-content .ck-widget {
+          border-color: ${darkMode ? '#4b5563' : '#d1d5db'} !important;
+        }
+        
+        .ck-editor__main {
+          border-color: ${darkMode ? '#4b5563' : '#d1d5db'} !important;
+        }
+        
+        .ck-editor__editable.ck-focused {
+          border-color: ${darkMode ? '#3b82f6' : '#3b82f6'} !important;
+          box-shadow: 0 0 0 2px ${darkMode ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'} !important;
+        }
+        
+        .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+          border-color: ${darkMode ? '#4b5563' : '#d1d5db'} !important;
         }
       `}</style>
     </div>

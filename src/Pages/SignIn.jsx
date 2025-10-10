@@ -103,6 +103,7 @@ const SignIn = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify(data),
       });
 
@@ -115,10 +116,9 @@ const SignIn = () => {
       }
 
       if (!res.ok) {
-        showAlert({ type: "error", message: jsonResponse.Message || "Something went wrong" });
+        showAlert({ type: "error", message: jsonResponse.message || "Something went wrong" });
         return;
       }
-      debugger
 
       showAlert({ type: "success", message: jsonResponse.Message || "Login successful!" });
 

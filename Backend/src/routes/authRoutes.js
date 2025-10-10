@@ -8,9 +8,9 @@ router.post('/register', authController.registerUser);
 router.post('/verify-email', authController.verifyEmail);
 router.post('/resend-verification', authController.resendEmailVerification);
 router.post('/login', authController.loginUser);
+router.get('/logout', verifyJWT, authController.logoutUser);
 router.post('/googleLogin', authController.googleLogin);
 router.get('/getLoggerDetails', verifyJWT, authController.getLoggerDetails);
-router.get('/logout', verifyJWT, authController.logoutUser);
 router.get('/refereshAccessToken', authController.refreshAccessToken);
 
 export const authRoutes = router;

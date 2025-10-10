@@ -1,17 +1,13 @@
+
 // components/About.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCode, FaLightbulb, FaUsers, FaChartLine, FaMountain, FaHiking } from 'react-icons/fa';
+import { 
+  FaMountain, FaHiking, FaLanguage, FaHeart, FaMusic, FaCamera, 
+  FaPlane, FaUtensils, FaBook, FaGlobe
+} from 'react-icons/fa';
 
 const About = () => {
-  const skills = [
-    { name: 'Frontend Development', level: 90, icon: <FaCode /> },
-    { name: 'Backend Development', level: 85, icon: <FaCode /> },
-    { name: 'UI/UX Design', level: 75, icon: <FaLightbulb /> },
-    { name: 'Team Leadership', level: 80, icon: <FaUsers /> },
-    { name: 'Project Management', level: 70, icon: <FaChartLine /> },
-  ];
-
   const personalInfo = [
     { label: 'Name', value: 'Alex Johnson' },
     { label: 'Email', value: 'alex@example.com' },
@@ -19,27 +15,31 @@ const About = () => {
     { label: 'Availability', value: 'Full-time, Freelance' },
   ];
 
+  const interests = [
+    { name: 'Hiking', icon: <FaHiking /> },
+    { name: 'Photography', icon: <FaCamera /> },
+    { name: 'Traveling', icon: <FaPlane /> },
+    { name: 'Cooking', icon: <FaUtensils /> },
+    { name: 'Music', icon: <FaMusic /> },
+    { name: 'Reading', icon: <FaBook /> },
+  ];
+
+  const languages = [
+    { name: 'English', level: 'Native' },
+    { name: 'Spanish', level: 'Intermediate' },
+    { name: 'French', level: 'Basic' },
+  ];
+
   return (
-    <section id="about" className="py-20 bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-teal-900 relative overflow-hidden">
-      {/* Teal-Blue Gradient Background */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10">
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-teal-300 to-transparent"></div>
-        <div className="absolute top-32 left-0 w-full h-32 bg-gradient-to-b from-blue-300 to-transparent"></div>
-        <div className="absolute top-64 left-0 w-full h-32 bg-gradient-to-b from-teal-400 to-transparent"></div>
-      </div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-20 right-20 w-16 h-16 rounded-full bg-teal-200/30 dark:bg-teal-800/30 animate-float"></div>
-      <div className="absolute bottom-20 left-20 w-20 h-20 rounded-full bg-blue-200/30 dark:bg-blue-800/30 animate-float animation-delay-2000"></div>
-      
-      <div className="container mx-auto px-4 relative z-10">
+    <section id="about" className="py-20 bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-teal-900">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl font-bold mb-2 font-playfair"
+            className="text-3xl font-bold mb-2 font-playfair text-teal-700 dark:text-teal-300"
           >
             About Me
           </motion.h2>
@@ -53,6 +53,7 @@ const About = () => {
         </div>
         
         <div className="flex flex-col lg:flex-row gap-12 items-center">
+          {/* Left Column - Personal Journey and Info */}
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -60,7 +61,7 @@ const About = () => {
             transition={{ duration: 0.7 }}
             className="lg:w-1/2"
           >
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-teal-100 dark:border-teal-900">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-teal-100 dark:border-teal-900">
               <h3 className="text-2xl font-semibold mb-6 text-teal-600 dark:text-blue-400 font-playfair flex items-center">
                 <FaMountain className="mr-2" /> My Journey
               </h3>
@@ -97,66 +98,77 @@ const About = () => {
             </div>
           </motion.div>
           
+          {/* Right Column - Professional Interests & Languages */}
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="lg:w-1/2"
+            className="lg:w-1/2 space-y-8"
           >
-            <div className="bg-gradient-to-br from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900 p-8 rounded-2xl shadow-xl border border-teal-200 dark:border-teal-800">
-              <h3 className="text-2xl font-semibold mb-8 text-center text-teal-600 dark:text-blue-400 font-playfair flex items-center justify-center">
-                <FaHiking className="mr-2" /> Skills & Expertise
+            {/* Interests & Hobbies Section */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-teal-100 dark:border-teal-900">
+              <h3 className="text-xl font-semibold mb-4 text-teal-600 dark:text-blue-400 font-playfair flex items-center">
+                <FaHeart className="mr-2" /> Interests & Hobbies
               </h3>
               
-              <div className="space-y-6">
-                {skills.map((skill, index) => (
+              <div className="grid grid-cols-2 gap-3">
+                {interests.map((interest, index) => (
                   <motion.div 
                     key={index}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    transition={{ duration: 0.2, delay: index * 0.05 }}
+                    whileHover={{ y: -3 }}
+                    className="flex items-center p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-100 dark:border-teal-800"
                   >
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="text-teal-500 dark:text-blue-400">
-                          {skill.icon}
-                        </div>
-                        <span className="font-medium font-poppins">{skill.name}</span>
-                      </div>
-                      <span className="text-sm font-medium text-teal-600 dark:text-blue-400 font-poppins">{skill.level}%</span>
+                    <div className="text-teal-500 dark:text-blue-400 mr-3">
+                      {interest.icon}
                     </div>
-                    <div className="w-full bg-teal-200 dark:bg-teal-800 rounded-full h-3 overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: 0.2 }}
-                        className="h-full bg-gradient-to-r from-teal-500 to-blue-600 rounded-full"
-                      ></motion.div>
-                    </div>
+                    <span className="font-medium font-poppins text-gray-700 dark:text-gray-300">
+                      {interest.name}
+                    </span>
                   </motion.div>
                 ))}
               </div>
+            </div>
+            
+            {/* Languages Section */}
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-teal-100 dark:border-teal-900">
+              <h3 className="text-xl font-semibold mb-4 text-teal-600 dark:text-blue-400 font-playfair flex items-center">
+                <FaLanguage className="mr-2" /> Languages
+              </h3>
               
-              <div className="mt-10">
-                <h4 className="text-lg font-semibold mb-4 text-center font-poppins">Technologies I Work With</h4>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {['React', 'Vue', 'Node.js', 'TypeScript', 'Python', 'MongoDB', 'AWS', 'Docker'].map((tech, index) => (
-                    <motion.span 
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.2, delay: index * 0.05 }}
-                      whileHover={{ y: -5, scale: 1.05 }}
-                      className="px-4 py-2 bg-white dark:bg-teal-800 rounded-full shadow-sm text-sm font-medium border border-teal-200 dark:border-teal-700 font-poppins"
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                </div>
+              <div className="space-y-4">
+                {languages.map((lang, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.2, delay: index * 0.05 }}
+                    className="flex items-center"
+                  >
+                    <div className="w-24 font-medium font-poppins text-gray-700 dark:text-gray-300">
+                      {lang.name}
+                    </div>
+                    <div className="flex-1">
+                      <div className="w-full bg-teal-200 dark:bg-teal-800 rounded-full h-2 overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          whileInView={{ width: lang.level === 'Native' ? '100%' : lang.level === 'Intermediate' ? '70%' : '40%' }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, delay: 0.2 }}
+                          className="h-full bg-gradient-to-r from-teal-500 to-blue-600 rounded-full"
+                        ></motion.div>
+                      </div>
+                    </div>
+                    <div className="w-24 text-right text-sm font-medium text-teal-600 dark:text-blue-400 font-poppins">
+                      {lang.level}
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>

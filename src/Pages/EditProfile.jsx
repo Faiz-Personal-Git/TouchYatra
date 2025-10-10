@@ -17,10 +17,16 @@ import {
 } from 'react-icons/fa';
 import { useAlert } from "../Components/Alert"
 import { useParams, useNavigate } from 'react-router-dom';
+import { setUser } from "../States/Slice/UserSlice"
+import { setLoading } from "../States/Slice/LoadingSlice"
+import { useDispatch, useSelector } from "react-redux"
+import AdminHeader from "../Components/AdminHeader"
 
 import { Hero, About, Experience, Education, Skills, Gallery, Projects, Certifications, Testimonials, MyTeam, Blog, YouTube, Videos, Medical, EmergencyContact, Documents, ProfileAnalytics, PaymentQR, Family, Playlist } from "../Components/Profile/EditIndex";
 
 const EditProfile = () => {
+  const defaultProfileImage = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80";
+
   const [activeSection, setActiveSection] = useState('dashboard');
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -29,7 +35,6 @@ const EditProfile = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [headerSearch, setHeaderSearch] = useState('');
-  const [user, setUser] = useState({});  
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedMode = localStorage.getItem('darkMode');
@@ -45,8 +50,50 @@ const EditProfile = () => {
   const containerRef = useRef(null);
   const { showAlert } = useAlert();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+  const refresh = useSelector((state) => state.loading.refresh);
+
 
   useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const loggerApi = import.meta.env.VITE_LOGGERDETAIL_API;
+    const userDetail = import.meta.env.VITE_USERDETAIL_API;
+    const refreshToken = import.meta.env.VITE_REFRESHTOKEN_API;
+
+    const loggerDetail = async () => {
+      
+      const response = await fetch(`${apiUrl}${loggerApi}`, {
+        method: 'GET',
+        credentials: 'include', 
+      });
+
+
+      if (response.status === 401) {
+        const refToken = await fetch(`${apiUrl}${refreshToken}`, {
+          method: 'GET',
+          credentials: "include",
+        });
+
+        if (refToken.ok) {
+          const retryResponse = await fetch(`${apiUrl}${loggerApi}`, {
+            method: 'GET',
+            credentials: "include",
+          });
+
+          if (retryResponse.ok) {
+            const data = await retryResponse.json();
+          } else {
+            navigate("/SignIn");
+          }
+        } else {
+          navigate("/SignIn");
+        }
+        return;
+      }
+
+    }
+
     const fetchUserDetails = async () => {
       if (!DisplayName) {
         showAlert({
@@ -58,9 +105,8 @@ const EditProfile = () => {
       }
 
       try {
-        
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const userDetail = import.meta.env.VITE_USERDETAIL_API;
+
+        dispatch(setLoading(true));
 
         const response = await fetch(`${apiUrl}${userDetail}/${DisplayName}`);
 
@@ -79,14 +125,7 @@ const EditProfile = () => {
           return;
         }
 
-        showAlert({
-          type: "success",
-          message:
-            jsonResponse.message ||
-            `Welcome back, ${DisplayName}! Your profile has been loaded successfully.`,
-        });
-
-        setUser(jsonResponse.Data);
+        dispatch(setUser(jsonResponse.Data));
 
       } catch (error) {
         console.error("Network or unexpected error:", error);
@@ -95,11 +134,14 @@ const EditProfile = () => {
           message: "A network error occurred. Please try again shortly.",
         });
         navigate("/SignIn");
+      } finally {
+        dispatch(setLoading(false));
       }
     };
 
+    loggerDetail();
     fetchUserDetails();
-  }, [DisplayName]);
+  }, [DisplayName, dispatch, refresh]);
 
   // Apply dark mode class to document element
   useEffect(() => {
@@ -342,6 +384,61 @@ const EditProfile = () => {
     item.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleLogout = async (e) => {
+    e.preventDefault();
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL;
+    const logoutEndpoint = import.meta.env.VITE_LOGOUT_API;
+
+    try {
+      debugger
+      const res = await fetch(`${apiBaseUrl}${logoutEndpoint}`, {
+        method: 'GET',
+        credentials: 'include', 
+      });
+
+      const jsonResponse = await res.json().catch(() => ({
+        message: "Unexpected error occurred",
+      }));
+
+      if (!res.ok) {
+        showAlert({
+          type: "error",
+          message: jsonResponse.message || "Logout failed",
+        });
+        return;
+      }
+
+      showAlert({
+        type: "success",
+        message: "Logged out successfully",
+      });
+
+      dispatch(setUser(null));
+      navigate("/SignIn");
+
+    } catch (error) {
+      console.error("Logout error:", error);
+      showAlert({
+        type: "error",
+        message: "Network error. Please try again.",
+      });
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <svg className="animate-spin h-10 w-10 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        <p className="mt-4 text-sm tracking-wide text-teal-300">Loading, please wait...</p>
+      </div>
+
+    );
+  }
+
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
@@ -395,7 +492,11 @@ const EditProfile = () => {
                   >
                     <div className="w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl">
                       <img
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                        src={
+                          user.ProfileImage
+                            ? `${import.meta.env.VITE_API_URL}${user.ProfileImage}`
+                            : defaultProfileImage
+                        }
                         alt="User Profile"
                         className="w-full h-full object-cover"
                       />
@@ -715,9 +816,9 @@ const EditProfile = () => {
       case 'hero':
         return <Hero darkMode={darkMode} user={user} />;
       case 'about':
-        return <About darkMode={darkMode} />;
+        return <About darkMode={darkMode} user={user} />;
       case 'experience':
-        return <Experience darkMode={darkMode} />;
+        return <Experience darkMode={darkMode} user={user} />;
       case 'education':
         return <Education darkMode={darkMode} />;
       case 'skills':
@@ -777,7 +878,11 @@ const EditProfile = () => {
                   }}
                 >
                   <img
-                    src="https://lh3.googleusercontent.com/a-/AFdZucqvdT7Z7XJf3Z7XJz7Z7XJz7Z7XJz7Z7XJz7Z7XJ=s96-c"
+                    src={
+                      user.ProfileImage
+                        ? `${import.meta.env.VITE_API_URL}${user.ProfileImage}`
+                        : defaultProfileImage
+                    }
                     alt="User Profile"
                     className="w-full h-full object-cover"
                   />
@@ -831,7 +936,9 @@ const EditProfile = () => {
       </div>
 
       <Helmet>
-        <title>Admin Panel | John Doe</title>
+
+        <title>Admin Panel | {`${user?.FirstName} ${user?.LastName}`}</title>
+
         <meta name="description" content="Admin panel for managing your profile" />
       </Helmet>
 
@@ -865,14 +972,19 @@ const EditProfile = () => {
                 whileTap={{ scale: 0.9 }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                  src={
+                    user.ProfileImage
+                      ? `${import.meta.env.VITE_API_URL}${user.ProfileImage}`
+                      : defaultProfileImage
+                  }
                   alt="User Profile"
                   className="w-full h-full object-cover"
                 />
+
               </motion.div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800 dark:text-white">Admin Panel</h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">John Doe</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{`${user?.FirstName} ${user?.LastName}`}</p>
               </div>
             </div>
 
@@ -945,7 +1057,9 @@ const EditProfile = () => {
               {darkMode ? <><FaSun className="mr-2" /> Light Mode</> : <><FaMoon className="mr-2" /> Dark Mode</>}
             </button>
 
-            <button className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-700 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-800 dark:text-white hover:bg-white dark:hover:bg-gray-700 transition-colors">
               <FaSignOutAlt className="mr-2" /> Logout
             </button>
           </div>
@@ -963,113 +1077,14 @@ const EditProfile = () => {
       {/* Main content */}
       <div className="lg:ml-64 min-h-screen relative z-10">
         {/* Creative Header */}
-        <header className="sticky top-0 z-20">
-          {/* Animated Header Background */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 dark:from-teal-900/20 dark:to-cyan-900/20"></div>
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-5 dark:opacity-10"></div>
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-400/20 to-indigo-500/20 rounded-full filter blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-br from-teal-400/20 to-cyan-500/20 rounded-full filter blur-3xl"></div>
-          </div>
-
-          <div className="relative z-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-700/50">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 gap-4">
-              <div>
-                <h1 className="text-xl font-bold text-gray-800 dark:text-white capitalize">
-                  {activeSection === 'dashboard' ? 'Dashboard' : activeSection}
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {activeSection === 'dashboard'
-                    ? 'Overview of your profile and activity'
-                    : `Manage your ${activeSection} section`}
-                </p>
-              </div>
-
-              {/* Creative Search Bar */}
-              <div className="relative w-full md:w-64">
-                <input
-                  type="text"
-                  placeholder="Search anything..."
-                  value={headerSearch}
-                  onChange={(e) => setHeaderSearch(e.target.value)}
-                  className="w-full px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-full border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent pl-10"
-                />
-                <FaSearch className="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400" />
-                <button className="absolute right-2 top-1.5 p-1 bg-gradient-to-r from-teal-400 to-cyan-500 text-white rounded-full w-7 h-7 flex items-center justify-center">
-                  <FaArrowRight className="text-xs" />
-                </button>
-              </div>
-
-              {/* Creative Profile Section */}
-              <div className="flex items-center space-x-4">
-
-                {/* Profile Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 p-2 rounded-xl bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/30 dark:to-cyan-900/30 hover:from-teal-100 hover:to-cyan-100 dark:hover:from-teal-800/50 dark:hover:to-cyan-800/50 transition-all shadow-sm">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-gray-800 shadow">
-                      <img
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                        alt="User Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="hidden md:block text-left">
-                      <p className="text-sm font-medium text-gray-800 dark:text-white">John Doe</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">Admin</p>
-                    </div>
-                    <FaChevronDown className="text-gray-800 dark:text-white text-xs" />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right">
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
-                          <img
-                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                            alt="User Profile"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-gray-800 dark:text-white font-medium">John Doe</p>
-                          <p className="text-gray-600 dark:text-gray-400 text-sm">Full Stack Developer</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="py-2">
-                      <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex items-center">
-                          <FaUser className="mr-3 text-gray-500" />
-                          <span>View Profile</span>
-                        </div>
-                      </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex items-center">
-                          <FaCog className="mr-3 text-gray-500" />
-                          <span>Account Settings</span>
-                        </div>
-                      </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex items-center">
-                          <FaPalette className="mr-3 text-gray-500" />
-                          <span>Customize Theme</span>
-                        </div>
-                      </button>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <div className="flex items-center">
-                          <FaSignOutAlt className="mr-3 text-gray-500" />
-                          <span>Logout</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+        <AdminHeader
+          activeSection={activeSection}
+          darkMode={darkMode}
+          user={user}
+          defaultProfileImage={defaultProfileImage}
+          headerSearch={headerSearch}
+          setHeaderSearch={setHeaderSearch}
+        />
 
         {/* Content area */}
         <main className="p-4 lg:p-8">
@@ -1078,12 +1093,7 @@ const EditProfile = () => {
 
         {/* Footer */}
         <footer className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-t border-gray-200/50 dark:border-gray-700/50 p-4 text-center text-gray-600 dark:text-gray-400 text-sm">
-          <p>© 2023 John Doe. All rights reserved.</p>
-          <div className="mt-2 flex justify-center space-x-4">
-            <a href="#" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Contact</a>
-          </div>
+          <p>© {`${new Date(user.createdAt).getFullYear()} ${user.FirstName} ${user.LastName}`}. All rights reserved.</p>
         </footer>
       </div>
     </div>

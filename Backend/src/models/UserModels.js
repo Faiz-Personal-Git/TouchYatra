@@ -2,10 +2,16 @@ import { model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { config } from "../utils/index.js";
+import { type } from "os";
 
 
 const userSchema = new Schema(
   {
+    UserUniqueId: {
+      type: String,
+      unique: true,
+      trim: true,
+    },
     FirstName: {
       type: String,
       trim: true
@@ -69,10 +75,41 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
-    UserUniqueId: {
-      type: String,
-      unique: true,
+    Hobbies: {
+      type: [],
       trim: true,
+    },
+    Language: {
+      type: [],
+      trim: true,
+    },
+    MyJourney:{
+      type:String,
+      trim:true
+    },
+    AddressLine1:{
+      type:String,
+      trim:true
+    },
+    AddressLine2:{
+      type:String,
+      trim:true
+    },
+    Country:{
+      type:String,
+      trim:true
+    },
+    State:{
+      type:String,
+      trim:true
+    },
+    City:{
+      type:String,
+      trim:true
+    },
+    Pincode:{
+      type:String,
+      trim:true
     },
   },
   { timestamps: true }
